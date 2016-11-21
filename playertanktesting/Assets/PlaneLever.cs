@@ -52,13 +52,17 @@ public class PlaneLever : NetworkBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "hand")
+        bool hasParentParent = other.gameObject.transform.parent != null && other.gameObject.transform.parent.parent != null;
+        if (hasParentParent && other.gameObject.transform.parent.parent.gameObject.tag == "hand")
         {
+            Debug.Log("hand intersecting");
+
             HandObject = other.gameObject;
 
             // Can only intersect if the trigger is not already held.
             if (!HandObject.GetComponent<PseudoHand>().trigger_on)
             {
+                
                 intersecting = true;
             }
         }

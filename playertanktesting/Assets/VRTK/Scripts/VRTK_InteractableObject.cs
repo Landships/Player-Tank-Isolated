@@ -774,9 +774,64 @@ namespace VRTK
             }
         }
 
+        //private bool current = false;
+        //private bool setCurrent = false;
         private void FixedUpdateRotatorTrack()
         {
+            //Vector3 localTrack = trackPoint.InverseTransformPoint(this.transform.position);
+            // Vector3 localOriginal = originalControllerAttachPoint.InverseTransformPoint(this.transform.position);
+            //Debug.Log(localTrack);
+            //Debug.Log(localOriginal);
+            //localTrack = new Vector3(localTrack.x, 0f, localTrack.z);
+            // localOriginal = new Vector3(localOriginal.x, 0f, localOriginal.z);
+            // Vector3 formatTrack = transform.TransformPoint(localTrack);
+            //Vector3 formatOriginal = transform.TransformPoint(localOriginal);
+            //Debug.Log(formatTrack);
+            //Debug.Log(formatOriginal);
+            //var rotateForce = localTrack - localOriginal;
             var rotateForce = trackPoint.position - originalControllerAttachPoint.position;
+            //Debug.Log(rotateForce);
+            //rotateForce = Vector3.zero;
+            //Debug.Log("trackpoint: " + trackPoint.position);
+            //Debug.Log("original: " + originalControllerAttachPoint.position);
+            /*if (!setCurrent) {
+                if (rotateForce.x < 0) {
+                    setCurrent = true;
+                }
+                else if (rotateForce.x > 0) {
+                    current = true;
+                    setCurrent = true;
+                }
+            }*/
+            float limit = 1f;
+            if (Mathf.Abs(rotateForce.x) >= limit) {
+                if (rotateForce.x < 0) {
+                    rotateForce = new Vector3(-limit, rotateForce.y, rotateForce.z);
+                }
+                else {
+                    rotateForce = new Vector3(limit, rotateForce.y, rotateForce.z);
+                }
+            }
+
+            if (Mathf.Abs(rotateForce.y) >= limit) {
+                if (rotateForce.y < 0) {
+                    rotateForce = new Vector3(rotateForce.x, -limit, rotateForce.z);
+                } else {
+                    rotateForce = new Vector3(rotateForce.x, limit, rotateForce.z);
+                }
+            }
+    
+            if (Mathf.Abs(rotateForce.z) >= limit) {
+                if (rotateForce.z < 0) {
+                    rotateForce = new Vector3(rotateForce.x, rotateForce.y, -limit);
+                } else {
+                    rotateForce = new Vector3(rotateForce.x, rotateForce.y, limit);
+                }
+            }
+            //Debug.Log("rotateL " + rotateForce);
+            //Debug.Log("magnitude: " + rb.velocity.magnitude);
+            //Debug.Log("angular: " + rb.angularVelocity.magnitude);
+            //Debug.Log("angular: " + rb.angularVelocity);
             rb.AddForceAtPosition(rotateForce, originalControllerAttachPoint.position, ForceMode.VelocityChange);
         }
 
@@ -808,7 +863,7 @@ namespace VRTK
             if (angle != 0)
             {
                 Vector3 angularTarget = angle * axis;
-                rb.angularVelocity = Vector3.MoveTowards(rb.angularVelocity, angularTarget, maxDistanceDelta);
+                //rb.angularVelocity = Vector3.MoveTowards(rb.angularVelocity, angularTarget, maxDistanceDelta);
             }
 
             Vector3 velocityTarget = positionDelta / Time.fixedDeltaTime;

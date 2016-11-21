@@ -93,13 +93,13 @@ public class Cannon_Fire_CS : NetworkBehaviour
     void Mouse_Input()
     {
         
-		GameObject gunTrigger = GameObject.Find("ElevCrank");
+		/*GameObject gunTrigger = GameObject.Find("ElevCrank");
 		//Debug.Log (gunTrigger);
 		if (gunTrigger.GetComponent<FiringState> ().fireState) 
 		{
 			//Debug.Log ("if triggered");
 			Fire ();
-		}
+		}*/
     }
 
     //[Server]
