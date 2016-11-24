@@ -1,44 +1,45 @@
 ﻿using UnityEngine;
-using UnityEngine.Networking;
 using System.Collections;
 
-[ ExecuteInEditMode ]
+[ExecuteInEditMode]
 
-public class Barrel_Base_CS : NetworkBehaviour {
-	
-	public Mesh Part_Mesh ;
-    public Mesh Collider_Mesh ;
-	public Mesh Sub_Collider_Mesh ;
+public class Barrel_Base_CS : MonoBehaviour
+{
 
-	public int Materials_Num = 1 ;
-	public Material[] Materials ;
-	public Material Part_Material ;
+    public Mesh Part_Mesh;
+    public Mesh Collider_Mesh;
+    public Mesh Sub_Collider_Mesh;
 
-	public float Offset_X = 0.0f ;
-	public float Offset_Y = 0.0f ;
-	public float Offset_Z = 0.0f ;
+    public int Materials_Num = 1;
+    public Material[] Materials;
+    public Material Part_Material;
 
-	public float Durability = Mathf.Infinity ;
-	public float Sub_Durability = 100000.0f ;
-	public float Trouble_Time = 20.0f ; 
-	public GameObject Trouble_Effect_Object ;
+    public float Offset_X = 0.0f;
+    public float Offset_Y = 0.0f;
+    public float Offset_Z = 0.0f;
 
-	public int Barrel_Type = 0 ;
-	
-	public Transform Parent_Transform ;
+    public float Durability = Mathf.Infinity;
+    public float Sub_Durability = 100000.0f;
+    public float Trouble_Time = 20.0f;
+    public GameObject Trouble_Effect_Object;
 
-    //[Server]
-    void Start () {
-		Parent_Transform = this.transform ;
-		if ( Application.isPlaying ) {
-			// Send message to "Bullet_Generator" and "Recoil_Brake_CS".
-			BroadcastMessage ( "Set_Barrel_Type" , Barrel_Type , SendMessageOptions.DontRequireReceiver ) ;
-			Destroy ( this ) ;
-		}
-	}
+    public int Barrel_Type = 0;
 
-    //[Server]
-    void Reset () {
-		Start () ;
-	}
+    public Transform Parent_Transform;
+
+    void Start()
+    {
+        Parent_Transform = this.transform;
+        if (Application.isPlaying)
+        {
+            // Send message to "Bullet_Generator" and "Recoil_Brake_CS".
+            BroadcastMessage("Set_Barrel_Type", Barrel_Type, SendMessageOptions.DontRequireReceiver);
+            Destroy(this);
+        }
+    }
+
+    void Reset()
+    {
+        Start();
+    }
 }

@@ -1,11 +1,8 @@
 ﻿using UnityEngine;
-using UnityEngine.Networking;
 using System.Collections;
 
-public class Cannon_Vertical_CS : NetworkBehaviour
+public class Cannon_Vertical_CS : MonoBehaviour
 {
-    public GameObject GunCrank;
-    private PlaneLever GunCrankScript;
 
     public float Max_Elevation = 13.0f;
     public float Max_Depression = 7.0f;
@@ -15,7 +12,6 @@ public class Cannon_Vertical_CS : NetworkBehaviour
     public bool Upper_Course = false;
     public bool AI_Reference = true;
 
-    [SyncVar]
     float Current_Angle;
     float Target_Angle;
     public float Temp_Vertical; // Referred to from "Sound_Control_CS".
@@ -44,7 +40,6 @@ public class Cannon_Vertical_CS : NetworkBehaviour
 
     void Start()
     { // Turret's objects are sorted at the opening.
-        GunCrankScript = GunCrank.GetComponent<PlaneLever>();
     }
 
     void Complete_Turret()
@@ -80,7 +75,7 @@ public class Cannon_Vertical_CS : NetworkBehaviour
                     Mouse_Input();
                     break;
                 case 5:
-                    //Mouse_Input();
+                    Mouse_Input();
                     break;
             }
         }
@@ -93,7 +88,7 @@ public class Cannon_Vertical_CS : NetworkBehaviour
             switch (Input_Type)
             {
                 case 4:
-                    //Auto_Turn();
+                    Auto_Turn();
                     break;
                 case 5:
                     Auto_Turn();
@@ -132,34 +127,9 @@ public class Cannon_Vertical_CS : NetworkBehaviour
         }
     }
 
-    [Server]
-    public void Mouse_Input()
+    void Mouse_Input()
     {
         // Adjust aiming.
-
-        // @Ross: All we need to do is map the horizontal control levers levers to "d" and "j" here. 
-        // d is a left rotation, j is right. 
-
-        Current_Angle = GunCrankScript.angle / (Mathf.PI);
-        
-        //Current_Angle = Mathf.Clamp(Current_Angle, Max_Elevation, Max_Depression);
-        This_Transform.localRotation = Quaternion.Euler(new Vector3(Current_Angle, 0.0f, 0.0f));
-
-        /*
-        if (Input.GetKey(KeyCode.UpArrow))
-        {
-            Current_Angle -= 0.08f;
-            Current_Angle = Mathf.Clamp(Current_Angle, Max_Elevation, Max_Depression);
-            This_Transform.localRotation = Quaternion.Euler(new Vector3(Current_Angle, 0.0f, 0.0f));
-
-        }
-        else if (Input.GetKey(KeyCode.DownArrow))
-        {
-            Current_Angle += 0.08f;
-            Current_Angle = Mathf.Clamp(Current_Angle, Max_Elevation, Max_Depression);
-            This_Transform.localRotation = Quaternion.Euler(new Vector3(Current_Angle, 0.0f, 0.0f));
-
-        }
         if (Input.GetKeyDown(KeyCode.Space))
         {
             Last_Mouse_Pos = Input.mousePosition;
@@ -169,13 +139,11 @@ public class Cannon_Vertical_CS : NetworkBehaviour
             Offset_Angle += (Input.mousePosition.y - Last_Mouse_Pos.y) * 0.02f;
             Last_Mouse_Pos = Input.mousePosition;
         }
-
-        else {
+        else
+        {
             Offset_Angle = 0.0f;
         }
-        */
     }
-
 
     void Start_Tracking()
     { // This function is called from "Turret_Horizontal".
@@ -203,13 +171,15 @@ public class Cannon_Vertical_CS : NetworkBehaviour
             {
                 Target_Angle = Auto_Angle(); // Calculate the proper angle.
             }
-            else {
+            else
+            {
                 Target_Angle = Manual_Angle(); // Simply turn toward the target.
             }
             Target_Angle += Mathf.DeltaAngle(0.0f, This_Transform.localEulerAngles.x);
             Target_Angle += Offset_Angle;
         }
-        else { // Not tracking. Return to the initial position.
+        else
+        { // Not tracking. Return to the initial position.
             Target_Angle = -Mathf.DeltaAngle(This_Transform.localEulerAngles.x, 0.0f);  // Calculate the angle to the initial position.
             if (Mathf.Abs(Target_Angle) < 0.01f)
             { // Cannon returned to the initial position.
@@ -227,7 +197,8 @@ public class Cannon_Vertical_CS : NetworkBehaviour
             Temp_Vertical = Mathf.Lerp(0.0f, 1.0f, -Target_Angle / (Speed_Mag * Time.fixedDeltaTime + Buffer_Angle));
             Rotate_In_FixedUpdate();
         }
-        else {
+        else
+        {
             Temp_Vertical = 0.0f;
         }
     }
@@ -257,11 +228,13 @@ public class Cannon_Vertical_CS : NetworkBehaviour
             {
                 Temp_Angle = Mathf.Rad2Deg * Mathf.Atan(-Pos_X_Base / 2.0f + Mathf.Pow(Pos_Y_Base, 0.5f));
             }
-            else {
+            else
+            {
                 Temp_Angle = Mathf.Rad2Deg * Mathf.Atan(-Pos_X_Base / 2.0f - Mathf.Pow(Pos_Y_Base, 0.5f));
             }
         }
-        else {
+        else
+        {
             Temp_Angle = 45.0f;
         }
         Vector3 Temp_Pos = This_Transform.parent.forward;
@@ -305,17 +278,20 @@ public class Cannon_Vertical_CS : NetworkBehaviour
                     RayCast_Count = 0.0f;
                 }
             }
-            else { // Target is not detected.
+            else
+            { // Target is not detected.
                 Fire_Flag = false;
                 RayCast_Count = 0.0f;
             }
         }
-        else { // InDirect Fire.
+        else
+        { // InDirect Fire.
             if (AI_Script.Detect_Flag)
             { // Target is detected.
                 Fire_Flag = true;
             }
-            else {
+            else
+            {
                 Fire_Flag = false; // Target is not detected.
             }
         }
@@ -341,12 +317,14 @@ public class Cannon_Vertical_CS : NetworkBehaviour
             { // Cannon can directly aim the target.
                 return true;
             }
-            else { // Ray hits something else.
+            else
+            { // Ray hits something else.
                 Random_Offset();
                 return false;
             }
         }
-        else { // Ray does not hit anyhing.
+        else
+        { // Ray does not hit anyhing.
             Random_Offset();
             return false;
         }
@@ -367,7 +345,8 @@ public class Cannon_Vertical_CS : NetworkBehaviour
                     Random_Offset();
                 }
             }
-            else { // Cannon is not within the angle range.
+            else
+            { // Cannon is not within the angle range.
                 if (AI_Script.Direct_Fire)
                 {
                     if (AI_Script.Near_Flag)
@@ -380,17 +359,20 @@ public class Cannon_Vertical_CS : NetworkBehaviour
                             Random_Offset();
                         }
                     }
-                    else { // The target is out of Approach_Distance.
+                    else
+                    { // The target is out of Approach_Distance.
                         Cannon_Count = 0.0f;
                         Wait_Count = 0.0f;
                     }
                 }
-                else {
+                else
+                {
                     Cannon_Count = 0.0f;
                 }
             }
         }
-        else { // Turret is not ready, or Ray does not hit the target.
+        else
+        { // Turret is not ready, or Ray does not hit the target.
             Cannon_Count = 0.0f;
             Wait_Count = 0.0f;
         }
@@ -431,7 +413,8 @@ public class Cannon_Vertical_CS : NetworkBehaviour
         {
             Flag = true;
         }
-        else {
+        else
+        {
             Flag = false;
         }
     }

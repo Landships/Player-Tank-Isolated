@@ -1,40 +1,25 @@
 ﻿using UnityEngine;
-using UnityEngine.Networking;
 using System.Collections;
 
-public class Artillery_Fire_CS : NetworkBehaviour
+public class Artillery_Fire_CS : MonoBehaviour
 {
-    //[SyncVar]
+
     public float Interval_Min;
-    //[SyncVar]
     public float Interval_Max;
-    //[SyncVar]
     public float Radius;
-    //[SyncVar]
     public float Height;
-    //[SyncVar]
     public float Mass;
-    //[SyncVar]
     public float Delete_Time;
-    //[SyncVar]
     public float Explosion_Force;
-    //[SyncVar]
     public float Explosion_Radius;
-    //[SyncVar]
     public GameObject Explosion_Object;
 
-    //[SyncVar]
     bool Flag = false;
-    //[SyncVar]
     int Shell_Count;
-    //[SyncVar]
     float Time_Count;
-    //[SyncVar]
     Vector3 Target_Pos;
-    //[SyncVar]
     int Number;
 
-    //[Server]
     void Update()
     {
         if (Flag)
@@ -74,7 +59,6 @@ public class Artillery_Fire_CS : NetworkBehaviour
         }
     }
 
-    //[Server]
     public void Fire(Transform Temp_Target, int Temp_Num)
     {
         if (Flag == false)
@@ -87,7 +71,8 @@ public class Artillery_Fire_CS : NetworkBehaviour
             {
                 Target_Pos = Temp_Script.transform.position;
             }
-            else {
+            else
+            {
                 Target_Pos = Temp_Target.position;
             }
         }

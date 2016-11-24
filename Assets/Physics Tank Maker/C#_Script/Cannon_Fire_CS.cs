@@ -1,16 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
-using UnityEngine.Networking;
 
-public class Cannon_Fire_CS : NetworkBehaviour
+public class Cannon_Fire_CS : MonoBehaviour
 {
 
     public float Reload_Time = 2.0f;
     public float Recoil_Force = 5000.0f;
     public bool Karl_Flag = false;
-    public bool fire_bool = false;
 
-    //[SyncVar]
     public bool Reload_Flag = true; // Referred to from "Cannon_Vertical".
     public bool Open_Fire_Flag = true;
 
@@ -36,7 +33,6 @@ public class Cannon_Fire_CS : NetworkBehaviour
         }
     }
 
-    //[Server]
     void Update()
     {
         if (Flag)
@@ -69,7 +65,7 @@ public class Cannon_Fire_CS : NetworkBehaviour
     {
         if (Input.GetButton("R_Button"))
         {
-            //Fire () ;
+            Fire();
         }
     }
 
@@ -77,7 +73,7 @@ public class Cannon_Fire_CS : NetworkBehaviour
     {
         if (Input.GetButton("Fire3"))
         {
-            //Fire () ;
+            Fire();
         }
     }
 
@@ -85,25 +81,19 @@ public class Cannon_Fire_CS : NetworkBehaviour
     {
         if (Input.GetKey("x"))
         {
-            //Fire () ;
+            Fire();
         }
     }
 
-   // [Server]
     void Mouse_Input()
     {
-        
-		/*GameObject gunTrigger = GameObject.Find("ElevCrank");
-		//Debug.Log (gunTrigger);
-		if (gunTrigger.GetComponent<FiringState> ().fireState) 
-		{
-			//Debug.Log ("if triggered");
-			Fire ();
-		}*/
+        if (Input.GetMouseButton(0))
+        {
+            Fire();
+        }
     }
 
-    //[Server]
-    public void Fire()
+    void Fire()
     {
         if (Reload_Flag && Trouble_Flag == false && Turret_Horizontal_Script.OpenFire_Flag)
         {
@@ -111,7 +101,8 @@ public class Cannon_Fire_CS : NetworkBehaviour
             { // Send message to Karl's Turret_Base with "Recoil_Brake". 
                 transform.parent.BroadcastMessage("Fire_Linkage", Switch_LR, SendMessageOptions.DontRequireReceiver);
             }
-            else {
+            else
+            {
                 BroadcastMessage("Fire_Linkage", Switch_LR, SendMessageOptions.DontRequireReceiver);
             }
             MainBody_Rigidbody.AddForceAtPosition(-This_Transform.forward * Recoil_Force, This_Transform.position, ForceMode.Impulse);
@@ -120,7 +111,6 @@ public class Cannon_Fire_CS : NetworkBehaviour
         }
     }
 
-    //[Server]
     IEnumerator Reload()
     {
         yield return new WaitForSeconds(Reload_Time);
@@ -129,7 +119,8 @@ public class Cannon_Fire_CS : NetworkBehaviour
         {
             Switch_LR = 2;
         }
-        else {
+        else
+        {
             Switch_LR = 1;
         }
     }
@@ -147,7 +138,8 @@ public class Cannon_Fire_CS : NetworkBehaviour
             StartCoroutine("Trouble_Count", Temp_Time);
             return true;
         }
-        else {
+        else
+        {
             return false;
         }
     }
@@ -174,7 +166,8 @@ public class Cannon_Fire_CS : NetworkBehaviour
         {
             Flag = true;
         }
-        else {
+        else
+        {
             Flag = false;
         }
     }

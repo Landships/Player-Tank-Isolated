@@ -1,45 +1,22 @@
 ﻿using UnityEngine;
 using System.Collections;
-using UnityEngine.UI;
-using UnityEngine.Networking;
 
-public class Bullet_Control_CS : NetworkBehaviour
+public class Bullet_Control_CS : MonoBehaviour
 {
-    public float Red_Flash_Time = .5f;
-    public GameObject playerTank;
 
-    //[SyncVar]
     public int Type; // 0=AP , 1=HE
-    //[SyncVar]
     public float Delete_Time;
-    //[SyncVar]
     public float Explosion_Force;
-    //[SyncVar]
     public float Explosion_Radius;
-    //[SyncVar]
     public GameObject Impact_Object;
-    //[SyncVar]
     public GameObject Ricochet_Object;
-    //[SyncVar]
     public GameObject Explosion_Object;
-    //[SyncVar]
     public float Attack_Multiplier = 1.0f;
-    //[SyncVar]
     public bool Debug_Flag;
-
-    [SyncVar]
-    string hitobject;
-    [SyncVar]
-    string parentobject;
-    [SyncVar]
-    float energy;
-    [SyncVar]
-    bool execute = false;
 
     Transform This_Transform;
     Rigidbody This_Rigidbody;
 
-    [SyncVar]
     bool Live_Flag = true;
     int RayCast_Switch = 0;
 
@@ -47,38 +24,6 @@ public class Bullet_Control_CS : NetworkBehaviour
     GameObject Hit_Object;
     Vector3 Hit_Normal;
 
-    //[Server]
-    IEnumerator flashRed(RawImage hitIndicatorImage)
-    {
-        Color originalImageColor = hitIndicatorImage.color;
-        hitIndicatorImage.color = Color.red;
-        yield return new WaitForSeconds(Red_Flash_Time);
-        if (originalImageColor != Color.red)
-        {
-            hitIndicatorImage.color = originalImageColor;
-        }
-    }
-    
-
-    [Server]
-    void Destroy_Bullet_Time()
-    {
-        Destroy(this.gameObject, Delete_Time);
-    }
-
-    [Server]
-    void Destroy_Bullet()
-    {
-        Destroy(this.gameObject);
-    }
-
-    IEnumerator Destroy_Bullet(float time)
-    {
-        yield return new WaitForSeconds(time);
-        NetworkServer.Destroy(this.gameObject);
-    }
-
-    //[Server]
     void Awake()
     {  // (Note.) Sometimes OnCollisionEnter() is called earlier than Start().
         This_Transform = transform;
@@ -87,24 +32,9 @@ public class Bullet_Control_CS : NetworkBehaviour
 
     void Start()
     {
-        //Destroy(this.gameObject, Delete_Time);
-        Destroy_Bullet_Time();
+        Destroy(this.gameObject, Delete_Time);
     }
 
-    void Update()
-    {
-        if (execute)
-        {
-            GameObject target = GameObject.Find(parentobject).transform.FindChild(hitobject).gameObject;
-            Damage_Control_CS target_script = target.GetComponent<Damage_Control_CS>();
-            target_script.Breaker(energy);
-            Debug.Log(target.name);
-            execute = false;
-        }
-    }
-		
-
-    //[Server]
     void FixedUpdate()
     {
         if (Live_Flag)
@@ -134,29 +64,12 @@ public class Bullet_Control_CS : NetworkBehaviour
         }
     }
 
-    //[Server]
     void OnCollisionEnter(Collision collision)
     {
-        if (isServer)
+        if (Live_Flag)
         {
-            if (Live_Flag)
-            {
-                Hit(collision.gameObject, collision.contacts[0].normal);
-            }
+            Hit(collision.gameObject, collision.contacts[0].normal);
         }
-    }
-
-    void Rpc_BreakerCall(string hitobject, string parentobject, float energy)
-    {
-        GameObject target = GameObject.Find(parentobject).transform.FindChild(hitobject).gameObject;
-        Damage_Control_CS target_script = target.GetComponent<Damage_Control_CS>();
-        target_script.Breaker(energy);
-    }
-    
-    [ClientRpc]
-    void RpcSetExectute()
-    {
-        execute = true;
     }
 
     void Hit(GameObject Temp_Object, Vector3 Temp_Normal)
@@ -181,7 +94,7 @@ public class Bullet_Control_CS : NetworkBehaviour
             { // Hit object has "Damage_Control" script.
                 if (Type == 0)
                 { // AP
-                    // Create AP Ricochet Particle.
+                  // Create AP Ricochet Particle.
                     if (Ricochet_Object)
                     {
                         Instantiate(Ricochet_Object, This_Transform.position, Quaternion.identity);
@@ -191,78 +104,19 @@ public class Bullet_Control_CS : NetworkBehaviour
                     float Hit_Energy = 0.5f * This_Rigidbody.mass * Mathf.Pow(This_Rigidbody.velocity.magnitude, 2);
                     Hit_Energy *= Mathf.Lerp(0.0f, 1.0f, Mathf.Sqrt(Hit_Angle / 90.0f));
                     Hit_Energy *= Attack_Multiplier;
-                    playerTank = GameObject.Find("PlayerTank");
-                    /*
-                    if (Hit_Object != null && Hit_Object.transform.IsChildOf(playerTank.transform))
-                    {
-
-                        string hitObjectName = Temp_Script.name;
-
-                        if (hitObjectName.Equals("Armor_Collider"))
-                        {
-                            hitObjectName = "MainBody";
-                            // Left and right wheels
-                        }
-                        else if (hitObjectName.Length >= 9 && hitObjectName.Substring(0, 9).Equals("RoadWheel"))
-                        {
-                            if (hitObjectName.Substring(10, 1).Equals("L"))
-                            {
-                                hitObjectName = "LeftTreads";
-                            }
-                            else {
-                                hitObjectName = "RightTreads";
-                            }
-                            // Left and right invisible wheel components
-                        }
-                        else if (hitObjectName.Length >= 23 && hitObjectName.Substring(0, 23).Equals("Invisible_SprocketWheel"))
-                        {
-                            if (hitObjectName.Length >= 25 && hitObjectName.Substring(25, 1).Equals("L"))
-                            {
-                                hitObjectName = "LeftTreads";
-                            }
-                            else {
-                                hitObjectName = "RightTreads";
-                            }
-                        }
-                        else if (hitObjectName.Equals("StaticTrack_Collider"))
-                        {
-                            hitObjectName = "MainBody";
-                        }
-                        else if (hitObjectName.Equals("Barrel"))
-                        {
-                            hitObjectName = "Cannon";
-                        }
-
-                        GameObject hitIndicatorObject = GameObject.Find(hitObjectName + "Indicator");
-                        if (hitIndicatorObject == null)
-                        {
-                            // If the object wasn't found, act as if MainBody was hit
-                            hitIndicatorObject = GameObject.Find("MainBodyIndicator");
-                        }
-
-                        RawImage hitIndicatorImage = hitIndicatorObject.GetComponent<RawImage>();
-
-                        StartCoroutine(flashRed(hitIndicatorImage));
-
-                    }
-                    */
-
                     // Output for debug.
                     if (Debug_Flag)
                     {
                         Debug.Log("AP Damage " + Hit_Energy + " on " + Temp_Object.name);
                     }
                     // Send 'Hit_Energy' to "Damage_Control" script.
-                    hitobject = Temp_Object.name;
-                    parentobject = Temp_Object.transform.root.gameObject.name;
-                    energy = Hit_Energy;
-                    //execute = true;
-                    RpcSetExectute();
-                    Debug.Log("Executed");
-                    //Rpc_BreakerCall(hitobject, parentobject, Hit_Energy);
-
+                    if (Temp_Script.Breaker(Hit_Energy))
+                    {
+                        Destroy(this.gameObject);
+                    }
                 }
-                else { // HE
+                else
+                { // HE
                     Explosion_Force *= Attack_Multiplier;
                     // Output for debug.
                     if (Debug_Flag)
@@ -273,10 +127,11 @@ public class Bullet_Control_CS : NetworkBehaviour
                     Temp_Script.Breaker(Explosion_Force);
                 }
             }
-            else { // Hit object does not have "Damage_Control" script.
+            else
+            { // Hit object does not have "Damage_Control" script.
                 if (Type == 0)
                 { // AP
-                    // Create AP Impact Particle.
+                  // Create AP Impact Particle.
                     if (Impact_Object)
                     {
                         Instantiate(Impact_Object, This_Transform.position, Quaternion.identity);
@@ -287,20 +142,17 @@ public class Bullet_Control_CS : NetworkBehaviour
         // Explosion process.
         if (Type == 1)
         { // HE
-            // Search objects in the Explosion_Radius.
+          // Search objects in the Explosion_Radius.
             Collider[] Temp_Colliders = Physics.OverlapSphere(This_Transform.position, Explosion_Radius);
             foreach (Collider Target_Collider in Temp_Colliders)
             {
                 //StartCoroutine ( "Add_Explosion_Force" , Target_Collider ) ;
                 Add_Explosion_Force(Target_Collider);
             }
-            Destroy_Bullet();
-            //Destroy(this.gameObject, 0.01f * Explosion_Radius);
-            //NetworkServer.Destroy(this.gameObject);
+            Destroy(this.gameObject, 0.01f * Explosion_Radius);
         }
     }
 
-    //[Server]
     void Add_Explosion_Force(Collider Temp_Target_Collider)
     {
         //yield return new WaitForSeconds ( 0.01f * Vector3.Distance ( This_Transform.position , Temp_Target_Collider.transform.position ) ) ;
@@ -332,13 +184,11 @@ public class Bullet_Control_CS : NetworkBehaviour
         }
     }
 
-    //[Server]
     public void Set_Type(int Temp_Type)
     {
         Type = Temp_Type;
     }
 
-    //[Server]
     public void Set_AP_Value(float Temp_Time, GameObject Temp_Impact_Object, GameObject Temp_Ricochet_Object)
     {
         Delete_Time = Temp_Time;
@@ -346,7 +196,6 @@ public class Bullet_Control_CS : NetworkBehaviour
         Ricochet_Object = Temp_Ricochet_Object;
     }
 
-    //[Server]
     public void Set_HE_Value(float Temp_Time, float Temp_Explosion_Force, float Temp_Explosion_Radius, GameObject Temp_Explosion_Object)
     {
         Delete_Time = Temp_Time;

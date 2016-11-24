@@ -1,8 +1,7 @@
 ﻿using UnityEngine;
-using UnityEngine.Networking;
 using System.Collections;
 
-public class Turret_Horizontal_CS : NetworkBehaviour
+public class Turret_Horizontal_CS : MonoBehaviour
 {
 
     public bool Limit_Flag;
@@ -14,9 +13,6 @@ public class Turret_Horizontal_CS : NetworkBehaviour
     public float Deceleration_Time = 0.1f;
     public float OpenFire_Angle = 180.0f;
     public GameObject Marker_Prefab;
-
-    private GameObject lever;
-    private PlaneLever planeleverscript;
 
     public bool Fire_Flag = false; // Referred to from "Cannon_Vertical".
     public Vector3 Target_Pos; // Referred to from "Cannon_Vertical".
@@ -32,8 +28,6 @@ public class Turret_Horizontal_CS : NetworkBehaviour
     bool Tracking_Flag = false;
     Transform Target_Transform;
     bool Moving_Flag = false;
-    [SyncVar]
-    private float leftangle = 0f;
 
     GameObject Marker_Object;
     GameObject Sub_Marker_Object;
@@ -51,27 +45,22 @@ public class Turret_Horizontal_CS : NetworkBehaviour
 
     bool Flag = true;
     int Tank_ID;
-    public int Input_Type;
+    int Input_Type = 4;
 
     AI_CS AI_Script;
 
     void Start()
     { // Turret's objects are sorted at the opening.
-        //sync turrent target angle with cranks
     }
 
     void Complete_Turret()
     { // Called from 'Turret_Finishing" when the sorting is finished.
         This_Transform = transform;
-        Debug.Log(This_Transform);
-        Debug.Log(transform);
         Parent_Transform = This_Transform.parent;
-        Debug.Log(Parent_Transform);
         Root_Transform = This_Transform.root;
         Current_Angle = This_Transform.localEulerAngles.y;
         Max_Right = Current_Angle + Max_Right;
         Max_Left = Current_Angle - Max_Left;
-        Debug.Log("Complete");
         // Instantiate Marker objects.
         if (Input_Type == 4 || Input_Type == 5 || Input_Type == 10)
         {
@@ -97,32 +86,28 @@ public class Turret_Horizontal_CS : NetworkBehaviour
         return Temp_Object;
     }
 
- 
     void Update()
     {
         if (Flag)
         {
             switch (Input_Type)
             {
-                //case 0:
-              //      KeyBoard_Input();
-             //       break;
-             //   case 1:
-            //        Stick_Input();
-            //        break;
-            //   case 2:
-            //        Trigger_Input();
-             //       break;
-             //   case 3:
-             //       Stick_Input();
-            //        break;
-                case 4:
-                    Mouse_Input();
+                case 0:
+                    KeyBoard_Input();
+                    break;
+                case 1:
+                    Stick_Input();
+                    break;
+                case 2:
+                    Trigger_Input();
+                    break;
+                case 3:
+                    Stick_Input();
                     break;
             }
         }
     }
-  
+
     void LateUpdate()
     {
         if ((Input_Type == 4 || Input_Type == 5) && Flag)
@@ -131,7 +116,6 @@ public class Turret_Horizontal_CS : NetworkBehaviour
         }
     }
 
- 
     void FixedUpdate()
     {
         if (Moving_Flag)
@@ -157,7 +141,8 @@ public class Turret_Horizontal_CS : NetworkBehaviour
         {
             Temp_Horizontal = Input.GetAxis("Horizontal2");
         }
-        else {
+        else
+        {
             Temp_Horizontal = 0.0f;
         }
         Rotate();
@@ -169,13 +154,12 @@ public class Turret_Horizontal_CS : NetworkBehaviour
         {
             Temp_Horizontal = Input.GetAxis("Horizontal");
         }
-        else {
+        else
+        {
             Temp_Horizontal = 0.0f;
         }
         Rotate();
     }
-
-    //void Crank_Input(){}
 
     void KeyBoard_Input()
     {
@@ -183,24 +167,15 @@ public class Turret_Horizontal_CS : NetworkBehaviour
         {
             Temp_Horizontal = Input.GetAxis("Horizontal");
         }
-        else {
+        else
+        {
             Temp_Horizontal = 0.0f;
         }
         Rotate();
     }
 
-    //float ReCalculate(float angle)
-  //  {
-   //     float newangle = 0;
-   //     newangle = angle-
-   //     Debug.Log(newangle);
-   //     return newangle;
-   // }
-
-    [Server]   
-    public void Mouse_Input() //changes here similar to drive control
+    void Mouse_Input()
     {
-        
         if (Input.GetMouseButtonDown(2))
         {
             Cast_Ray_Lock();
@@ -219,7 +194,8 @@ public class Turret_Horizontal_CS : NetworkBehaviour
             Offset_Angle += (Input.mousePosition.x - Last_Mouse_Pos.x) * 0.02f;
             Last_Mouse_Pos = Input.mousePosition;
         }
-        else {
+        else
+        {
             Offset_Angle = 0.0f;
         }
         // Switch the aiming mode.
@@ -230,146 +206,16 @@ public class Turret_Horizontal_CS : NetworkBehaviour
                 Free_Aim_Flag = false; // Return to initial position. 
                 Reset_Lock_On();
             }
-            else {
-                //				Free_Aim_Flag = true ; // Free Aiming.
-                //				Tracking_Flag = true ;
-                //				Moving_Flag = true ;
-                //				Target_Transform = null ;
-                //				Marker_Flag = true ;
-                //				// Send message to "Cannon_Vertical".
-                //				BroadcastMessage ( "Start_Tracking" , SendMessageOptions.DontRequireReceiver ) ;
-            }
-        }
-        
-        //added
-        Free_Aim_Flag = false; // Free Aiming.
-        Tracking_Flag = false;
-        Moving_Flag = true;
-        Target_Transform = null;
-        Marker_Flag = false;
-
-        lever = transform.GetChild(2).gameObject;
-        planeleverscript = lever.GetComponent<PlaneLever>();
-        leftangle = planeleverscript.angle * 180 / Mathf.PI;
-        //Debug.Log(This_Transform);
-
-        if (This_Transform)
-
-        {
-
-            //leftangle = ReCalculate(leftangle);
-            float j = leftangle;
-
-            // @Ross: All we need to do is map the horizontal control levers levers to "d" and "j" here. 
-            // d is a left rotation, j is right. 
-            if (leftangle <= 0) //@Mike: look for cranks angle local rotation.
+            else
             {
-
-                Current_Angle = j / 36;
-                updateModelAngle();
-                This_Transform.localRotation = Quaternion.Euler(new Vector3(0.0f, Current_Angle, 0.0f));
-
-
+                Free_Aim_Flag = true; // Free Aiming.
+                Tracking_Flag = true;
+                Moving_Flag = true;
+                Target_Transform = null;
+                Marker_Flag = true;
+                // Send message to "Cannon_Vertical".
+                BroadcastMessage("Start_Tracking", SendMessageOptions.DontRequireReceiver);
             }
-            else if (leftangle > 0)
-            {
-                Current_Angle = j / 36;
-                updateModelAngle();
-                This_Transform.localRotation = Quaternion.Euler(new Vector3(0.0f, Current_Angle, 0.0f));
-
-
-            }
-        }
-        else if (Input.GetKey("c"))
-        {
-            Target_Angle = Mathf.DeltaAngle(This_Transform.localEulerAngles.y, 0.0f);
-            if (Mathf.Abs(Target_Angle) < 0.01f)
-            {
-                Moving_Flag = false;
-            }
-        }
-        // Send message to "Cannon_Vertical".
-    }
-    void Auto_Turn()
-    {
-        // Update Target position.
-        if (Target_Transform)
-        {
-            Target_Pos = Target_Transform.position + (Target_Transform.forward * Target_Offset.z) + (Target_Transform.right * Target_Offset.x) + (Target_Transform.up * Target_Offset.y);
-        }
-
-        // Calculate Angle.
-        if (Tracking_Flag)
-        {
-            Vector3 Temp_Pos;
-            if (Limit_Flag)
-            { // Limited rotation.
-                Temp_Pos = Parent_Transform.InverseTransformPoint(Target_Pos);
-                Target_Angle = Vector2.Angle(Vector2.up, new Vector2(Temp_Pos.x, Temp_Pos.z));
-                if (Temp_Pos.x < 0.0f)
-                {
-                    Target_Angle = -Target_Angle;
-                }
-                Target_Angle -= Current_Angle;
-            }
-            else { // No limited.
-                Temp_Pos = This_Transform.InverseTransformPoint(Target_Pos);
-                Target_Angle = Vector2.Angle(Vector2.up, new Vector2(Temp_Pos.x, Temp_Pos.z));
-                if (Temp_Pos.x < 0.0f)
-                {
-                    Target_Angle = -Target_Angle;
-                }
-            }
-            Target_Angle += Offset_Angle;
-            //		} else { // Return to initial position.
-            //			Target_Angle = Mathf.DeltaAngle ( This_Transform.localEulerAngles.y , 0.0f ) ;
-            //			if ( Mathf.Abs ( Target_Angle ) < 0.01f ) {
-            //				Moving_Flag = false ;
-            //			}
-        }
-        else {
-
-
-        }
-        // Calculate Turn Rate.
-        if (Target_Angle > 0.01f)
-        {
-            Temp_Horizontal = Mathf.Lerp(0.0f, 1.0f, Target_Angle / (Speed_Mag * Time.fixedDeltaTime + Buffer_Angle));
-            if (Target_Angle > Buffer_Angle)
-            {
-                Current_Horizontal = Mathf.MoveTowards(Current_Horizontal, Temp_Horizontal, Time.fixedDeltaTime / Acceleration_Time);
-            }
-            else {
-                Current_Horizontal = Mathf.MoveTowards(Current_Horizontal, Temp_Horizontal, Time.fixedDeltaTime / Deceleration_Time);
-            }
-            //if ( !float.IsNaN ( Temp_Horizontal ) ) {
-            Rotate_In_FixedUpdate();
-            //}
-        }
-        else if (Target_Angle < -0.01f)
-        {
-            Temp_Horizontal = -Mathf.Lerp(0.0f, 1.0f, -Target_Angle / (Speed_Mag * Time.fixedDeltaTime + Buffer_Angle));
-            if (Target_Angle < -Buffer_Angle)
-            {
-                Current_Horizontal = Mathf.MoveTowards(Current_Horizontal, Temp_Horizontal, Time.fixedDeltaTime / Acceleration_Time);
-            }
-            else {
-                Current_Horizontal = Mathf.MoveTowards(Current_Horizontal, Temp_Horizontal, Time.fixedDeltaTime / Deceleration_Time);
-            }
-            //if ( !float.IsNaN ( Temp_Horizontal ) ) {
-            Rotate_In_FixedUpdate();
-            //}
-        }
-        else {
-            Temp_Horizontal = 0.0f;
-        }
-        // Set OpenFire_Flag.
-        if (Mathf.Abs(Target_Angle) <= OpenFire_Angle)
-        {
-            OpenFire_Flag = true;
-        }
-        else {
-            OpenFire_Flag = false;
         }
     }
 
@@ -382,7 +228,8 @@ public class Turret_Horizontal_CS : NetworkBehaviour
         {
             Current_Camera = Gun_Camera;
         }
-        else {
+        else
+        {
             Current_Camera = Camera.main;
         }
         // Cast Ray, and Set Target position.
@@ -419,7 +266,8 @@ public class Turret_Horizontal_CS : NetworkBehaviour
         {
             Current_Camera = Gun_Camera;
         }
-        else {
+        else
+        {
             Current_Camera = Camera.main;
         }
         // Cast Ray, and Set Target position.
@@ -431,12 +279,14 @@ public class Turret_Horizontal_CS : NetworkBehaviour
             {
                 Target_Pos = Temp_RaycastHit.point;
             }
-            else {
+            else
+            {
                 Mouse_Pos.z = 1000.0f;
                 Target_Pos = Current_Camera.ScreenToWorldPoint(Mouse_Pos);
             }
         }
-        else { // Ray does not hit anythig.
+        else
+        { // Ray does not hit anythig.
             Mouse_Pos.z = 1000.0f;
             Target_Pos = Current_Camera.ScreenToWorldPoint(Mouse_Pos);
         }
@@ -462,7 +312,91 @@ public class Turret_Horizontal_CS : NetworkBehaviour
         BroadcastMessage("Stop_Tracking", SendMessageOptions.DontRequireReceiver);
     }
 
-
+    void Auto_Turn()
+    {
+        // Update Target position.
+        if (Target_Transform)
+        {
+            Target_Pos = Target_Transform.position + (Target_Transform.forward * Target_Offset.z) + (Target_Transform.right * Target_Offset.x) + (Target_Transform.up * Target_Offset.y);
+        }
+        // Calculate Angle.
+        if (Tracking_Flag)
+        {
+            Vector3 Temp_Pos;
+            if (Limit_Flag)
+            { // Limited rotation.
+                Temp_Pos = Parent_Transform.InverseTransformPoint(Target_Pos);
+                Target_Angle = Vector2.Angle(Vector2.up, new Vector2(Temp_Pos.x, Temp_Pos.z));
+                if (Temp_Pos.x < 0.0f)
+                {
+                    Target_Angle = -Target_Angle;
+                }
+                Target_Angle -= Current_Angle;
+            }
+            else
+            { // No limited.
+                Temp_Pos = This_Transform.InverseTransformPoint(Target_Pos);
+                Target_Angle = Vector2.Angle(Vector2.up, new Vector2(Temp_Pos.x, Temp_Pos.z));
+                if (Temp_Pos.x < 0.0f)
+                {
+                    Target_Angle = -Target_Angle;
+                }
+            }
+            Target_Angle += Offset_Angle;
+        }
+        else
+        { // Return to initial position.
+            Target_Angle = Mathf.DeltaAngle(This_Transform.localEulerAngles.y, 0.0f);
+            if (Mathf.Abs(Target_Angle) < 0.01f)
+            {
+                Moving_Flag = false;
+            }
+        }
+        // Calculate Turn Rate.
+        if (Target_Angle > 0.01f)
+        {
+            Temp_Horizontal = Mathf.Lerp(0.0f, 1.0f, Target_Angle / (Speed_Mag * Time.fixedDeltaTime + Buffer_Angle));
+            if (Target_Angle > Buffer_Angle)
+            {
+                Current_Horizontal = Mathf.MoveTowards(Current_Horizontal, Temp_Horizontal, Time.fixedDeltaTime / Acceleration_Time);
+            }
+            else
+            {
+                Current_Horizontal = Mathf.MoveTowards(Current_Horizontal, Temp_Horizontal, Time.fixedDeltaTime / Deceleration_Time);
+            }
+            //if ( !float.IsNaN ( Temp_Horizontal ) ) {
+            Rotate_In_FixedUpdate();
+            //}
+        }
+        else if (Target_Angle < -0.01f)
+        {
+            Temp_Horizontal = -Mathf.Lerp(0.0f, 1.0f, -Target_Angle / (Speed_Mag * Time.fixedDeltaTime + Buffer_Angle));
+            if (Target_Angle < -Buffer_Angle)
+            {
+                Current_Horizontal = Mathf.MoveTowards(Current_Horizontal, Temp_Horizontal, Time.fixedDeltaTime / Acceleration_Time);
+            }
+            else
+            {
+                Current_Horizontal = Mathf.MoveTowards(Current_Horizontal, Temp_Horizontal, Time.fixedDeltaTime / Deceleration_Time);
+            }
+            //if ( !float.IsNaN ( Temp_Horizontal ) ) {
+            Rotate_In_FixedUpdate();
+            //}
+        }
+        else
+        {
+            Temp_Horizontal = 0.0f;
+        }
+        // Set OpenFire_Flag.
+        if (Mathf.Abs(Target_Angle) <= OpenFire_Angle)
+        {
+            OpenFire_Flag = true;
+        }
+        else
+        {
+            OpenFire_Flag = false;
+        }
+    }
 
     void Rotate()
     {
@@ -472,14 +406,14 @@ public class Turret_Horizontal_CS : NetworkBehaviour
             {
                 Current_Horizontal = Mathf.MoveTowards(Current_Horizontal, Temp_Horizontal, Time.deltaTime / Acceleration_Time);
             }
-            else {
+            else
+            {
                 Current_Horizontal = Mathf.MoveTowards(Current_Horizontal, Temp_Horizontal, Time.deltaTime / Deceleration_Time);
             }
             Current_Angle += Speed_Mag * Current_Horizontal * Time.deltaTime;
             if (Limit_Flag)
             {
                 Current_Angle = Mathf.Clamp(Current_Angle, Max_Left, Max_Right);
-                updateModelAngle();
             }
             This_Transform.localRotation = Quaternion.Euler(new Vector3(0.0f, Current_Angle, 0.0f));
         }
@@ -493,8 +427,6 @@ public class Turret_Horizontal_CS : NetworkBehaviour
             if (Limit_Flag)
             {
                 Current_Angle = Mathf.Clamp(Current_Angle, Max_Left, Max_Right);
-                updateModelAngle();
-
                 if (Current_Angle <= Max_Left || Current_Angle >= Max_Right)
                 {
                     Current_Horizontal = 0.0f;
@@ -511,7 +443,8 @@ public class Turret_Horizontal_CS : NetworkBehaviour
         {
             Fire_Flag = true; // Referred to from "Cannon_Vertical".
         }
-        else {
+        else
+        {
             Fire_Flag = false; // Referred to from "Cannon_Vertical".
         }
     }
@@ -542,7 +475,8 @@ public class Turret_Horizontal_CS : NetworkBehaviour
             StartCoroutine("Trouble_Count", Temp_Time);
             return true;
         }
-        else {
+        else
+        {
             return false;
         }
     }
@@ -573,7 +507,8 @@ public class Turret_Horizontal_CS : NetworkBehaviour
                 Marker_Flag = true;
             }
         }
-        else {
+        else
+        {
             Flag = false;
             Marker_Flag = false;
         }
@@ -582,13 +517,6 @@ public class Turret_Horizontal_CS : NetworkBehaviour
     void Get_AI(AI_CS Temp_Script)
     {
         AI_Script = Temp_Script;
-    }
-
-    void updateModelAngle()
-    {
-        GameObject rotatingComponent = GameObject.Find("RotatingComponent");
-        float UIAngle = rotatingComponent.GetComponent<RectTransform>().localEulerAngles.z;
-        rotatingComponent.GetComponent<RectTransform>().Rotate(new Vector3(0, 0, -lever.transform.parent.localEulerAngles.y - UIAngle));
     }
 
 }
