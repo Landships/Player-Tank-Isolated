@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 public class CameraControl : MonoBehaviour
 {
 
+    public Object grayscaleScriptx;
     UnityStandardAssets.ImageEffects.Grayscale grayscaleScript;
     public GameObject Mainbody;
     public GameObject Turret;
@@ -17,7 +17,12 @@ public class CameraControl : MonoBehaviour
     void Start()
     {
 
+
+
         grayscaleScript = GetComponent<UnityStandardAssets.ImageEffects.Grayscale>();
+        //grayscaleScript = (UnityStandardAssets.ImageEffects.Grayscale) grayscaleScriptx;
+        //grayscaleScript = GetComponent<Grayscale>();
+        Debug.Log(grayscaleScript);
         defaultFarPlane = GetComponent<Camera>().farClipPlane;
 
 
@@ -26,6 +31,11 @@ public class CameraControl : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
+
+
+        grayscaleScript.enabled = true;
+        GetComponent<Camera>().farClipPlane = grayscaleFarPlane;
 
         if (Mainbody == null || Turret == null || Hatch == null)
         {
