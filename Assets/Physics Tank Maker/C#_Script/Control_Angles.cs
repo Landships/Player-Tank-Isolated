@@ -30,12 +30,12 @@ public class Control_Angles : MonoBehaviour {
 		vert_crank_transform = vert_crank.GetComponent<Transform> ();
 	}
 
-	void Update() {
+	/*void Update() {
 		Debug.Log (GetLeftCrankAngle ());
 		Debug.Log (GetRightCrankAngle ());
 		Debug.Log (GetLeftLeverAngle ());
 		Debug.Log (GetRightLeverAngle ());
-	}
+	}*/
 
 	public float GetLeftLeverAngle() {
 		return left_lever_joint.angle;

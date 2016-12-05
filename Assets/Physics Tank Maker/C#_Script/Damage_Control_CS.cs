@@ -27,6 +27,9 @@ public class Damage_Control_CS : MonoBehaviour {
 	SphereCollider Wheel_SphereCollider ; // for Wheels.
 	Drive_Wheel_CS Drive_Wheel_Script ; // for Wheels.
 
+	//added TankLives
+	public TankLives lives;
+
 	void Start (){
 		switch ( Type ) {
 		case 1 : // Armor_Collider
@@ -79,6 +82,7 @@ public class Damage_Control_CS : MonoBehaviour {
 			}
 			break ;
 		}
+		lives = transform.root.GetChild (0).gameObject.GetComponent<TankLives> ();
 	}
 
 	void Complete_Turret () { // Called from 'Turret_Finishing".
@@ -100,6 +104,19 @@ public class Damage_Control_CS : MonoBehaviour {
 	}
 
 	public bool Breaker ( float Hit_Energy ) {
+		lives.loseLife ();
+		if (lives.getLives () <= 0) {
+			Penetration ();
+			return true;
+		}
+		else if (lives.getLives () <= 1) {
+			Trouble ();
+			return false;
+		}
+		else {
+			return false;
+		}
+		/*
 		if ( Hit_Energy >= Durability ) {
             Penetration();
 			return true ;
@@ -108,7 +125,7 @@ public class Damage_Control_CS : MonoBehaviour {
 			return false ;
 		} else {
 			return false ;
-		}
+		}*/
 	}
 
     
