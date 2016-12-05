@@ -34,7 +34,7 @@ public class PlayerController_VR : MonoBehaviour
     Vector3 lerp_final_right_position;
 
     //Client to send
-    byte[] client_info = new byte[24];
+    byte[] client_info = new byte[100];
     float[] client_cache = new float[6];
 
 
@@ -198,8 +198,8 @@ public class PlayerController_VR : MonoBehaviour
     {
 
         //byte[] client_new_world = n_manager_script.server_to_client_data_large;
-        float[] data = new float[24];
-        Buffer.BlockCopy(n_manager_script.server_to_client_data_large, 3, data, 0, 96);
+        float[] data = new float[25];
+        Buffer.BlockCopy(n_manager_script.server_to_client_data_large, 3, data, 0, 100);
 
         // 6 * 4byte things
         // 4byte things = left_handx, left_handy, left_handz, right_handx, right_handy, right_handz 
@@ -282,12 +282,12 @@ public class PlayerController_VR : MonoBehaviour
     public void server_get_values_to_send()
     {
 
-        float[] data_cache = new float[24];
+        float[] data_cache = new float[25];
         byte one = n_manager_script.server_to_client_data_large[0];
         byte two = n_manager_script.server_to_client_data_large[1];
         byte three = n_manager_script.server_to_client_data_large[2];
 
-        Buffer.BlockCopy(n_manager_script.server_to_client_data_large, 3, data_cache, 0, 96);
+        Buffer.BlockCopy(n_manager_script.server_to_client_data_large, 3, data_cache, 0, 100);
 
         int offset = 6;
         int index = 0;
@@ -311,8 +311,8 @@ public class PlayerController_VR : MonoBehaviour
         data_cache[index + 4] = right_hand.transform.position.y;
         data_cache[index + 5] = right_hand.transform.position.z;
 
-        byte[] data_out = new byte[99];
-        Buffer.BlockCopy(data_cache, 0, data_out, 3, 96);
+        byte[] data_out = new byte[103];
+        Buffer.BlockCopy(data_cache, 0, data_out, 3, 100);
         data_out[0] = one;
         data_out[1] = two;
         data_out[2] = three;
@@ -339,7 +339,7 @@ public class PlayerController_VR : MonoBehaviour
         client_cache[4] = right_controller.transform.position.y;
         client_cache[5] = right_controller.transform.position.z;
 
-        Buffer.BlockCopy(client_cache, 0, n_manager_script.client_info, 0, 24);
+        Buffer.BlockCopy(client_cache, 0, n_manager_script.client_to_server_data_large, 0, 100);
 
 
         Debug.Log("Left controller sending: " + right_controller.transform.position.ToString());

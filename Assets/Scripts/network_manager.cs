@@ -28,10 +28,10 @@ public class network_manager : MonoBehaviour
     static int server_socket_ID;
     int max_connections = 10;
 
-    public byte[] server_to_client_data = new byte[24];
+
     public int server_player_control = -1;
 
-    public byte[] server_reliable_buffer = new byte[99];
+
 
     //Client stuff
     int client_socket_ID;
@@ -39,16 +39,32 @@ public class network_manager : MonoBehaviour
     int client_connection;
     bool client_joined = false;
     public byte client_players_amount = 0;
-    public byte[] client_reliable_buffer = new byte[24];
 
 
-    public byte[] server_to_client_data_large = new byte[99];
+
+    //public byte[] server_to_client_data_large = new byte[99];
 
     public bool started = false;
 
     public bool reliable_message = false;
 
-    public byte[] client_info = new byte[24]; 
+    //public byte[] client_info = new byte[24];
+
+
+
+    // Buffer Info
+    // Sizes
+    public int size_of_server_buffer = 103;
+    public int size_of_client_buffer = 100;
+    // Client Buffers
+    public byte[] client_to_server_data_large = new byte[100];
+    public byte[] client_reliable_buffer = new byte[100];
+    // Server Buffers
+    public byte[] server_to_client_data_large = new byte[103];
+    public byte[] server_reliable_buffer = new byte[103];
+    public byte[] server_to_client_data = new byte[100];
+
+
 
 
     void Start()
@@ -263,8 +279,8 @@ public class network_manager : MonoBehaviour
         int received_connection_ID;
         int received_channel_ID;
         int recieved_data_size;
-        byte[] buffer = new byte[99];
-        int data_size = 99;
+        byte[] buffer = new byte[size_of_server_buffer];
+        int data_size = size_of_server_buffer;
 
         NetworkEventType networkEvent = NetworkEventType.DataEvent;
 
@@ -307,7 +323,7 @@ public class network_manager : MonoBehaviour
     {
         Debug.Log("ServerConnection After: " + server_client_connection);
         byte error;
-        byte[] message = new byte[99];
+        byte[] message = new byte[size_of_server_buffer];
         //
         //
         //
@@ -322,7 +338,7 @@ public class network_manager : MonoBehaviour
         message[2] = 0;
 
 
-        NetworkTransport.Send(server_socket_ID, s_c_connection, server_reliable_channel, message, 99, out error);
+        NetworkTransport.Send(server_socket_ID, s_c_connection, server_reliable_channel, message, size_of_server_buffer, out error);
 
 
         if (error != 0)
@@ -349,8 +365,8 @@ public class network_manager : MonoBehaviour
         int received_connection_ID;
         int received_channel_ID;
         int recieved_data_size;
-        byte[] buffer = new byte[99];
-        int data_size = 99;
+        byte[] buffer = new byte[size_of_server_buffer];
+        int data_size = size_of_server_buffer;
 
         NetworkEventType networkEvent = NetworkEventType.DataEvent;
 
@@ -407,7 +423,7 @@ public class network_manager : MonoBehaviour
     void tell_clients_to_start()
     {
         byte error;
-        byte[] message = new byte[99];
+        byte[] message = new byte[size_of_server_buffer];
         //
         //
         //
@@ -422,9 +438,9 @@ public class network_manager : MonoBehaviour
         message[2] = 1;
 
 
-        NetworkTransport.Send(server_socket_ID, server_client_connection[1], server_reliable_channel, message, 99, out error);
-        NetworkTransport.Send(server_socket_ID, server_client_connection[2], server_reliable_channel, message, 99, out error);
-        NetworkTransport.Send(server_socket_ID, server_client_connection[3], server_reliable_channel, message, 99, out error);
+        NetworkTransport.Send(server_socket_ID, server_client_connection[1], server_reliable_channel, message, size_of_server_buffer, out error);
+        NetworkTransport.Send(server_socket_ID, server_client_connection[2], server_reliable_channel, message, size_of_server_buffer, out error);
+        NetworkTransport.Send(server_socket_ID, server_client_connection[3], server_reliable_channel, message, size_of_server_buffer, out error);
 
         if (error != 0)
         {
@@ -452,7 +468,7 @@ public class network_manager : MonoBehaviour
     public void client_send_information()
     {
         byte error;
-        NetworkTransport.Send(client_socket_ID, client_connection, client_reliable_channel, client_info, 24, out error);
+        NetworkTransport.Send(client_socket_ID, client_connection, client_reliable_channel, client_to_server_data_large, size_of_client_buffer, out error);
 
     }
 
@@ -466,8 +482,8 @@ public class network_manager : MonoBehaviour
         int received_connection_ID;
         int received_channel_ID;
         int recieved_data_size;
-        byte[] buffer = new byte[24];
-        int data_size = 24;
+        byte[] buffer = new byte[size_of_client_buffer];
+        int data_size = size_of_client_buffer;
 
         NetworkEventType networkEvent = NetworkEventType.DataEvent;
 
@@ -541,8 +557,8 @@ public class network_manager : MonoBehaviour
         int received_connection_ID;
         int received_channel_ID;
         int recieved_data_size;
-        byte[] buffer = new byte[99];
-        int data_size = 99;
+        byte[] buffer = new byte[size_of_server_buffer];
+        int data_size = size_of_server_buffer;
 
         NetworkEventType networkEvent = NetworkEventType.DataEvent;
 
@@ -581,21 +597,21 @@ public class network_manager : MonoBehaviour
                               server_client_connection[1],
                               server_reliable_channel,
                               server_to_client_data_large,
-                              99,
+                              size_of_server_buffer,
                               out error);
 
         NetworkTransport.Send(server_socket_ID,
                               server_client_connection[2],
                               server_reliable_channel,
                               server_to_client_data_large,
-                              99,
+                              size_of_server_buffer,
                               out error);
 
         NetworkTransport.Send(server_socket_ID,
                               server_client_connection[3],
                               server_reliable_channel,
                               server_to_client_data_large,
-                              99,
+                              size_of_server_buffer,
                               out error);
 
     }
@@ -614,7 +630,7 @@ public class network_manager : MonoBehaviour
     {
         byte error;
         server_reliable_buffer[0] = 1;
-        NetworkTransport.Send(server_socket_ID, server_client_connection[1], server_real_reliable_channel, server_reliable_buffer, 99, out error);
+        NetworkTransport.Send(server_socket_ID, server_client_connection[1], server_real_reliable_channel, server_reliable_buffer, size_of_server_buffer, out error);
 
     }
 
@@ -623,7 +639,7 @@ public class network_manager : MonoBehaviour
     {
         byte error;
         client_reliable_buffer[0] = 1;
-        NetworkTransport.Send(client_socket_ID, client_connection, server_reliable_channel, client_reliable_buffer, 24, out error);
+        NetworkTransport.Send(client_socket_ID, client_connection, server_reliable_channel, client_reliable_buffer, size_of_client_buffer, out error);
 
     }
 
