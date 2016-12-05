@@ -107,7 +107,7 @@ public class PlayerController_VR : MonoBehaviour
         {
             if (owner == current_player)
             {
-                if (frame == 10)
+                if (frame == 5)
                 {
                     frame = -1;
                     client_update_values();

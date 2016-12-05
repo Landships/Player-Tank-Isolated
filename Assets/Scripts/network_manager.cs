@@ -48,7 +48,7 @@ public class network_manager : MonoBehaviour
 
     public bool reliable_message = false;
 
-    public byte[] client_info = new byte[240] 
+    public byte[] client_info = new byte[24]; 
 
 
     void Start()
