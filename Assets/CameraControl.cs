@@ -3,7 +3,6 @@
 public class CameraControl : MonoBehaviour
 {
 
-    public Object grayscaleScriptx;
     UnityStandardAssets.ImageEffects.Grayscale grayscaleScript;
     public GameObject Mainbody;
     public GameObject Turret;
@@ -20,9 +19,6 @@ public class CameraControl : MonoBehaviour
 
 
         grayscaleScript = GetComponent<UnityStandardAssets.ImageEffects.Grayscale>();
-        //grayscaleScript = (UnityStandardAssets.ImageEffects.Grayscale) grayscaleScriptx;
-        //grayscaleScript = GetComponent<Grayscale>();
-        Debug.Log(grayscaleScript);
         defaultFarPlane = GetComponent<Camera>().farClipPlane;
 
 

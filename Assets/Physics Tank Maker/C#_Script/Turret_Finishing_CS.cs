@@ -15,7 +15,7 @@ public class Turret_Finishing_CS : MonoBehaviour {
 		int Count = 0 ;
 		for ( int i = 0 ; i < transform.childCount ; i++ ) {
 			Transform Temp_Transform = transform.GetChild ( i ) ;
-			if ( Temp_Transform.name.Substring ( 0 , 11 ) == "Barrel_Base" ) {
+			if ( Temp_Transform.name.Length >= 11 && Temp_Transform.name.Substring ( 0 , 11 ) == "Barrel_Base" ) {
 				Count += 1 ;
 			}
 		}
