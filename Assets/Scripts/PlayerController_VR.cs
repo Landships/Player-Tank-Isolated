@@ -60,6 +60,8 @@ public class PlayerController_VR : MonoBehaviour
 
     bool reliable_message = false;
 
+    int frame_interval = 5;
+
 
     void Start()
     {
@@ -107,7 +109,7 @@ public class PlayerController_VR : MonoBehaviour
         {
             if (owner == current_player)
             {
-                if (frame == 5)
+                if (frame == frame_interval)
                 {
                     frame = -1;
                     client_update_values();
@@ -174,7 +176,7 @@ public class PlayerController_VR : MonoBehaviour
             past_left_positions.Enqueue(left_controller.transform.position);
             past_right_positions.Enqueue(right_controller.transform.position);
 
-            if (frame == 10)
+            if (frame == frame_interval)
             {
                 client_send_values();
             }
