@@ -11,12 +11,16 @@ ModelImporter:
     100006: polySurface36
     100008: transform8
     100010: transform9
+    100012: transform8.002
+    100014: transform9.002
     400000: FireFly_Interior1
     400002: FireFly_Interior2
     400004: //RootNode
     400006: polySurface36
     400008: transform8
     400010: transform9
+    400012: transform8.002
+    400014: transform9.002
     2300000: FireFly_Interior2
     3300000: FireFly_Interior2
     4300000: FireFly_Interior2
@@ -27,7 +31,7 @@ ModelImporter:
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
-    resampleRotations: 1
+    resampleCurves: 1
     optimizeGameObjects: 0
     motionNodeName: 
     animationImportErrors: 
