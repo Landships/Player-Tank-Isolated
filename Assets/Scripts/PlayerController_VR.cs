@@ -336,11 +336,13 @@ public class PlayerController_VR : MonoBehaviour
         client_cache[3] = right_controller.transform.position.x;
         client_cache[4] = right_controller.transform.position.y;
         client_cache[5] = right_controller.transform.position.z;
-        Buffer.BlockCopy(client_cache, 0, client_info, 0, 24);
+
+        Buffer.BlockCopy(client_cache, 0, n_manager_script.client_info, 0, 24);
+
 
         Debug.Log("Left controller sending: " + right_controller.transform.position.ToString());
 
-        n_manager_script.client_send_information(client_info);
+        n_manager_script.client_send_information();
 
     }
 

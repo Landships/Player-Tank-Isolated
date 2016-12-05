@@ -48,6 +48,8 @@ public class network_manager : MonoBehaviour
 
     public bool reliable_message = false;
 
+    public byte[] client_info = new byte[240] 
+
 
     void Start()
     {
@@ -447,7 +449,7 @@ public class network_manager : MonoBehaviour
 
 
 
-    public void client_send_information(byte[] client_info)
+    public void client_send_information()
     {
         byte error;
         NetworkTransport.Send(client_socket_ID, client_connection, client_reliable_channel, client_info, 24, out error);
