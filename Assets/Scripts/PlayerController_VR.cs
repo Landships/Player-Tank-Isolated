@@ -37,8 +37,6 @@ public class PlayerController_VR : MonoBehaviour
     byte[] client_info = new byte[24];
     float[] client_cache = new float[6];
 
-    public int size_of_server_buffer;
-    public int size_of_client_buffer;
 
     int server_player;
 
@@ -73,11 +71,7 @@ public class PlayerController_VR : MonoBehaviour
 
         past_left_positions = new Queue<Vector3>(10);
         past_right_positions = new Queue<Vector3>(10);
-        size_of_server_buffer = n_manager_script.size_of_server_buffer;
-        size_of_client_buffer = n_manager_script.size_of_client_buffer;
-
-
-}
+    }
 
     void Update()
     {
@@ -95,7 +89,15 @@ public class PlayerController_VR : MonoBehaviour
             // Server Updates world based off a clients inputs
             if (server_player == owner)
             {
-                server_update_values(n_manager_script.server_to_client_data);
+                if (reliable_message)
+                {
+                    Debug.Log("Server_recieved a reliable message");
+                    left_hand.GetComponent<Renderer>().material.color = Color.green;
+                }
+                else
+                {
+                    server_update_values(n_manager_script.server_to_client_data);
+                }
             }
             update_world_state();
             server_get_values_to_send();
@@ -103,7 +105,29 @@ public class PlayerController_VR : MonoBehaviour
 
         else
         {
-            client_update_values();
+            if (owner == current_player)
+            {
+                if (frame == 10)
+                {
+                    frame = -1;
+                    client_update_values();
+                    client_reconciliation();
+                }
+                frame++;
+
+                if (left_reconcile == true)
+                {
+                    reconcile_player_left_position();
+                }
+                if (right_reconcile == true)
+                {
+                    reconcile_player_right_position();
+                }
+            }
+            else
+            {
+                client_update_values();
+            }
             update_world_state();
         }
     }
@@ -128,15 +152,44 @@ public class PlayerController_VR : MonoBehaviour
     //if not owner and not host, do nothing, else:
     void update_world_state()
     {
-        if (current_player == owner)
+        if (current_player == 1 && current_player == owner)
         {
             Read_Camera_Rig();
+            //past_left_positions.Enqueue(left_hand.transform.position);
+            //past_right_positions.Enqueue(right_hand.transform.position);
         }
-        if (current_player != owner)
+        if (current_player == 1 && current_player != owner)
         {
+            if (owner == 2)
+                Debug.Log("Player 2");
+            //past_left_positions.Enqueue(new Vector3(left_x, left_y, left_z));
+            //past_right_positions.Enqueue(new Vector3(right_x, right_y, right_z));
+
             left_hand.transform.position = new Vector3(left_x, left_y, left_z);
             right_hand.transform.position = new Vector3(right_x, right_y, right_z);
         }
+        if (current_player != 1 && current_player == owner)
+        {
+            Read_Camera_Rig();
+            past_left_positions.Enqueue(left_controller.transform.position);
+            past_right_positions.Enqueue(right_controller.transform.position);
+
+            if (frame == 10)
+            {
+                client_send_values();
+            }
+
+        }
+        if (current_player != 1 && current_player != owner)
+        {
+
+            //past_left_positions.Enqueue(new Vector3(left_x, left_y, left_z));
+            //past_right_positions.Enqueue(new Vector3(right_x, right_y, right_z));
+
+            left_hand.transform.position = new Vector3(left_x, left_y, left_z);
+            right_hand.transform.position = new Vector3(right_x, right_y, right_z);
+        }
+
     }
 
     void client_update_values()
@@ -232,7 +285,7 @@ public class PlayerController_VR : MonoBehaviour
         byte two = n_manager_script.server_to_client_data_large[1];
         byte three = n_manager_script.server_to_client_data_large[2];
 
-        Buffer.BlockCopy(n_manager_script.server_to_client_data_large, 3, data_cache, 0, size_of_server_buffer - 3);
+        Buffer.BlockCopy(n_manager_script.server_to_client_data_large, 3, data_cache, 0, 96);
 
         int offset = 6;
         int index = 0;
@@ -256,8 +309,8 @@ public class PlayerController_VR : MonoBehaviour
         data_cache[index + 4] = right_hand.transform.position.y;
         data_cache[index + 5] = right_hand.transform.position.z;
 
-        byte[] data_out = new byte[size_of_server_buffer];
-        Buffer.BlockCopy(data_cache, 0, data_out, 3, size_of_server_buffer - 3);
+        byte[] data_out = new byte[99];
+        Buffer.BlockCopy(data_cache, 0, data_out, 3, 96);
         data_out[0] = one;
         data_out[1] = two;
         data_out[2] = three;
@@ -283,14 +336,11 @@ public class PlayerController_VR : MonoBehaviour
         client_cache[3] = right_controller.transform.position.x;
         client_cache[4] = right_controller.transform.position.y;
         client_cache[5] = right_controller.transform.position.z;
-
-
-
-        Buffer.BlockCopy(client_cache, 0, n_manager_script.client_to_server_data_large, 0, 24);
+        Buffer.BlockCopy(client_cache, 0, client_info, 0, 24);
 
         Debug.Log("Left controller sending: " + right_controller.transform.position.ToString());
 
-        n_manager_script.client_send_information();
+        n_manager_script.client_send_information(client_info);
 
     }
 
