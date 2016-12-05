@@ -46,7 +46,7 @@ public class Look_At_Point_CS : MonoBehaviour {
 	
 	void Update () {
 		if ( Flag ) {
-			/*if ( Main_Camera.enabled ) {
+			if ( Main_Camera.enabled ) {
 				switch ( Input_Type ) {
 				case 0 :
 					KeyBoard_Input () ;
@@ -70,7 +70,7 @@ public class Look_At_Point_CS : MonoBehaviour {
 					Mouse_Input () ;
 					break ;
 				}
-			}*/
+			}
 		}
 	}
 	

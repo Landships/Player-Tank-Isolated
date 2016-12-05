@@ -89,15 +89,7 @@ public class PlayerController_VR : MonoBehaviour
             // Server Updates world based off a clients inputs
             if (server_player == owner)
             {
-                if (reliable_message)
-                {
-                    Debug.Log("Server_recieved a reliable message");
-                    left_hand.GetComponent<Renderer>().material.color = Color.green;
-                }
-                else
-                {
-                    server_update_values(n_manager_script.server_to_client_data);
-                }
+                server_update_values(n_manager_script.server_to_client_data);
             }
             update_world_state();
             server_get_values_to_send();
@@ -105,29 +97,7 @@ public class PlayerController_VR : MonoBehaviour
 
         else
         {
-            if (owner == current_player)
-            {
-                if (frame == 10)
-                {
-                    frame = -1;
-                    client_update_values();
-                    client_reconciliation();
-                }
-                frame++;
-
-                if (left_reconcile == true)
-                {
-                    reconcile_player_left_position();
-                }
-                if (right_reconcile == true)
-                {
-                    reconcile_player_right_position();
-                }
-            }
-            else
-            {
-                 client_update_values();
-            }
+            client_update_values();
             update_world_state();
         }
     }
@@ -152,44 +122,15 @@ public class PlayerController_VR : MonoBehaviour
     //if not owner and not host, do nothing, else:
     void update_world_state()
     {
-        if (current_player == 1 && current_player == owner)
+        if (current_player == owner)
         {
             Read_Camera_Rig();
-            //past_left_positions.Enqueue(left_hand.transform.position);
-            //past_right_positions.Enqueue(right_hand.transform.position);
         }
-        if (current_player == 1 && current_player != owner)
+        if (current_player != owner)
         {
-            if (owner == 2)
-                Debug.Log("Player 2");
-            //past_left_positions.Enqueue(new Vector3(left_x, left_y, left_z));
-            //past_right_positions.Enqueue(new Vector3(right_x, right_y, right_z));
-
             left_hand.transform.position = new Vector3(left_x, left_y, left_z);
             right_hand.transform.position = new Vector3(right_x, right_y, right_z);
         }
-        if (current_player != 1 && current_player == owner)
-        {
-            Read_Camera_Rig();
-            past_left_positions.Enqueue(left_controller.transform.position);
-            past_right_positions.Enqueue(right_controller.transform.position);
-
-            if (frame == 10)
-            {
-                client_send_values();
-            }
-            
-        }
-        if (current_player != 1 && current_player != owner)
-        {
-          
-                //past_left_positions.Enqueue(new Vector3(left_x, left_y, left_z));
-                //past_right_positions.Enqueue(new Vector3(right_x, right_y, right_z));
-
-            left_hand.transform.position = new Vector3(left_x, left_y, left_z);
-            right_hand.transform.position = new Vector3(right_x, right_y, right_z);
-        }
-
     }
 
     void client_update_values()

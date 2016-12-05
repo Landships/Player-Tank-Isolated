@@ -101,17 +101,16 @@ public class Damage_Control_CS : MonoBehaviour {
 
 	public bool Breaker ( float Hit_Energy ) {
 		if ( Hit_Energy >= Durability ) {
-            Penetration();
+			Penetration () ;
 			return true ;
 		} else if ( Hit_Energy >= Sub_Durability ) {
-            Trouble();
+			Trouble () ;
 			return false ;
 		} else {
 			return false ;
 		}
 	}
 
-    
 	void  Penetration () {
 		switch ( Type ) {
 		case 1 : // Armor_Collider
@@ -147,7 +146,6 @@ public class Damage_Control_CS : MonoBehaviour {
 		}
 	}
 
-    
 	void Trouble () {
 		switch ( Type ) {
 		case 1 : // Armor_Collider
