@@ -37,6 +37,8 @@ public class PlayerController_VR : MonoBehaviour
     byte[] client_info = new byte[24];
     float[] client_cache = new float[6];
 
+    public int size_of_server_buffer;
+    public int size_of_client_buffer;
 
     int server_player;
 
@@ -71,7 +73,11 @@ public class PlayerController_VR : MonoBehaviour
 
         past_left_positions = new Queue<Vector3>(10);
         past_right_positions = new Queue<Vector3>(10);
-    }
+        size_of_server_buffer = n_manager_script.size_of_server_buffer;
+        size_of_client_buffer = n_manager_script.size_of_client_buffer;
+
+
+}
 
     void Update()
     {
@@ -226,7 +232,7 @@ public class PlayerController_VR : MonoBehaviour
         byte two = n_manager_script.server_to_client_data_large[1];
         byte three = n_manager_script.server_to_client_data_large[2];
 
-        Buffer.BlockCopy(n_manager_script.server_to_client_data_large, 3, data_cache, 0, 96);
+        Buffer.BlockCopy(n_manager_script.server_to_client_data_large, 3, data_cache, 0, size_of_server_buffer - 3);
 
         int offset = 6;
         int index = 0;
@@ -250,8 +256,8 @@ public class PlayerController_VR : MonoBehaviour
         data_cache[index + 4] = right_hand.transform.position.y;
         data_cache[index + 5] = right_hand.transform.position.z;
 
-        byte[] data_out = new byte[99];
-        Buffer.BlockCopy(data_cache, 0, data_out, 3, 96);
+        byte[] data_out = new byte[size_of_server_buffer];
+        Buffer.BlockCopy(data_cache, 0, data_out, 3, size_of_server_buffer - 3);
         data_out[0] = one;
         data_out[1] = two;
         data_out[2] = three;
@@ -277,11 +283,14 @@ public class PlayerController_VR : MonoBehaviour
         client_cache[3] = right_controller.transform.position.x;
         client_cache[4] = right_controller.transform.position.y;
         client_cache[5] = right_controller.transform.position.z;
-        Buffer.BlockCopy(client_cache, 0, client_info, 0, 24);
+
+
+
+        Buffer.BlockCopy(client_cache, 0, n_manager_script.client_to_server_data_large, 0, 24);
 
         Debug.Log("Left controller sending: " + right_controller.transform.position.ToString());
 
-        n_manager_script.client_send_information(client_info);
+        n_manager_script.client_send_information();
 
     }
 
