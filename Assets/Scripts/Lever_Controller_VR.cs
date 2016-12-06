@@ -51,13 +51,13 @@ public class Lever_Controller_VR : MonoBehaviour
 
 
     void Start()
-    {
+    {/*
         n_manager = GameObject.Find("Custom Network Manager(Clone)");
-        n_manager_script = n_manager.GetComponent<network_manager>();
+        n_manager_script = n_manager.GetComponent<network_manager>();*/
     }
 
     void Update()
-    {
+    {/*
         started = n_manager_script.started;
         ready = n_manager_script.game_ready;
 
@@ -74,12 +74,12 @@ public class Lever_Controller_VR : MonoBehaviour
         {
             //receive from server
             client_update_values();
-        }
+        }*/
     }
 
     void FixedUpdate()
     {
-        update_world_state();
+        //update_world_state();
     }
 
     public void server_read_buffer(byte[] client_inputs)

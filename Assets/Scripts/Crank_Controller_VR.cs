@@ -43,29 +43,41 @@ public class Crank_Controller_VR : MonoBehaviour
 
     void Start()
     {
-        n_manager = GameObject.Find("Custom Network Manager(Clone)");
-        n_manager_script = n_manager.GetComponent<network_manager>();
-        current_player = (byte)(n_manager_script.client_players_amount);
+        n_manager = null;
+
     }
 
     void Update()
     {
-        started = n_manager_script.started;
-        ready = n_manager_script.game_ready;
-
-        server_player = n_manager_script.server_player_control;
-
-        reliable_message = n_manager_script.reliable_message;
-
-        if (current_player == 2)
+        
+        if (n_manager != null)
         {
-            client_send_values();
-        }
+            n_manager_script = n_manager.GetComponent<network_manager>();
+            current_player = (byte)(n_manager_script.client_players_amount);
+            started = n_manager_script.started;
+            ready = n_manager_script.game_ready;
 
+            server_player = n_manager_script.server_player_control;
+
+            reliable_message = n_manager_script.reliable_message;
+
+            if (current_player == 2)
+            {
+                client_send_values();
+            }
+
+            else
+            {
+                server_get_client_hands();
+            }
+        }
         else
         {
-            server_get_client_hands();
+            n_manager = GameObject.Find("Custom Network Manager(Clone)");
+
         }
+
+        
     }
 
     void FixedUpdate()
