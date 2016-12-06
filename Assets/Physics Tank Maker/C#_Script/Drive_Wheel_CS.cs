@@ -183,5 +183,10 @@ public class Drive_Wheel_CS : MonoBehaviour {
 		MaxAngVelocity = Mathf.Clamp ( MaxAngVelocity , 0.0f , Temp_Script.MaxAngVelocity_Limit ) ;
 		Turn_Brake_Drag = Temp_Script.Turn_Brake_Drag ;
 	}
+
+    public void DisableDriveWheel()
+    {
+        this.enabled = false;
+    }
 	
 }

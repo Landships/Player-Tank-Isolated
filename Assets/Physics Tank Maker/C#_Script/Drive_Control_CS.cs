@@ -55,7 +55,7 @@ public class Drive_Control_CS : MonoBehaviour {
 	
 	bool Flag = true ;
 	int Tank_ID ;
-	int Input_Type = 4 ;
+	int Input_Type = 8 ;
 	
 	AI_CS AI_Script ;
 	Drive_Control_CS Control_Script ;
@@ -72,31 +72,7 @@ public class Drive_Control_CS : MonoBehaviour {
 	}
 	
 	void Update () {
-		if ( Flag ) {
-			switch ( Input_Type ) {
-			case 0 :
-				KeyBoard_Input () ;
-				break ;
-			case 1 :
-				Stick_Input () ;
-				break ;
-			case 2 :
-				Trigger_Input () ;
-				break ;
-			case 3 :
-				Stick_Trigger_Input () ;
-				break ;
-			case 4 :
-				Mouse_Input () ;
-				break ;
-			case 5 :
-				Mouse_Input_Easy () ;
-				break ;
-			case 10 :
-				AI_Input () ;
-				break ;
-			}
-		}
+        Lever_Input();
 		// Calculate Acceleration.
 		if ( Acceleration_Flag ) {
 			Acceleration () ;
@@ -133,6 +109,33 @@ public class Drive_Control_CS : MonoBehaviour {
 			Still_Count = 0.0f ;
 		}
 	}
+
+
+    void Lever_Input()
+    {
+        float L = 0;
+        float R = 0;
+        if (Input.GetKey("i"))
+        {
+            L = 1.0f;
+        }
+        if (Input.GetKey("k"))
+        {
+            L = -1.0f;
+        }
+        if (Input.GetKey("o"))
+        {
+            R = 1.0f;
+        }
+        if (Input.GetKey("l"))
+        {
+            R = -1.0f;
+        }
+
+        Vertical = (L / 2) + (R/2);
+        Horizontal = L-R;
+        Basic_Drive();
+    }
 
 	void Acceleration () {
 		// Switch Rate.
