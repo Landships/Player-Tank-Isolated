@@ -84,7 +84,7 @@ public class Crank_Controller_VR : MonoBehaviour
 
             else
             {
-                server_get_client_hands();
+                server_get_client_crank_position();
             }
         }       
     }
@@ -189,7 +189,7 @@ public class Crank_Controller_VR : MonoBehaviour
     }
 
     // Server Get values from the client buffer, so the client inputs
-    public void server_get_client_hands()
+    public void server_get_client_crank_position()
     {
         float[] vertical_crank_values = n_manager_script.server_read_client_buffer(10);
         float[] horizontal_crank_values = n_manager_script.server_read_client_buffer(11);
