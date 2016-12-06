@@ -47,20 +47,20 @@ public class Crank_Controller_VR : MonoBehaviour
         current_player = (byte)(n_manager_script.client_players_amount);
         if (current_player != 2)
         {
-            /*vertical_crank.GetComponent<VRTK.VRTK_InteractableObject>().enabled = false;
-            horizontal_crank.GetComponent<VRTK.VRTK_InteractableObject>().enabled = false;
-            vertical_crank.GetComponent<BoxCollider>().enabled = false;
-            horizontal_crank.GetComponent<BoxCollider>().enabled = false;
-            Destroy(vertical_crank.GetComponent<HingeJoint>());
-            Destroy(horizontal_crank.GetComponent<HingeJoint>());
-            vertical_crank.GetComponent<Rigidbody>().isKinematic = true;
-            horizontal_crank.GetComponent<Rigidbody>().isKinematic = true;*/
+            //vertical_crank.GetComponent<VRTK.VRTK_InteractableObject>().enabled = false;
+            //horizontal_crank.GetComponent<VRTK.VRTK_InteractableObject>().enabled = false;
+            //.GetComponent<BoxCollider>().enabled = false;
+            //horizontal_crank.GetComponent<BoxCollider>().enabled = false;
+            //Destroy(vertical_crank.GetComponent<HingeJoint>());
+            //Destroy(horizontal_crank.GetComponent<HingeJoint>());
+            //vertical_crank.GetComponent<Rigidbody>().isKinematic = true;
+            //horizontal_crank.GetComponent<Rigidbody>().isKinematic = true;
         }
     }
 
     void Start()
     {
-        n_manager = null;
+        //n_manager = null;
     }
 
     void Update()
@@ -91,7 +91,10 @@ public class Crank_Controller_VR : MonoBehaviour
 
     void FixedUpdate()
     {
-        update_world_state();
+        if (n_manager != null)
+        {
+            update_world_state();
+        }
     }
 
 
@@ -104,8 +107,10 @@ public class Crank_Controller_VR : MonoBehaviour
         }
         else
         {
-            vertical_crank.transform.localRotation = Quaternion.Euler(vertical_x, 0, 0);
-            horizontal_crank.transform.localRotation = Quaternion.Euler(horizontal_x, 0, 0);
+            vertical_crank.transform.localRotation = Quaternion.Euler(vertical_x, -90, -90);
+            horizontal_crank.transform.localRotation = Quaternion.Euler(horizontal_x, -90, -90);
+
+            Debug.Log("vertical x = " + vertical_x);
         }
     }
 
