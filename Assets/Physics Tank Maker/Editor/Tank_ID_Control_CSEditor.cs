@@ -7,7 +7,7 @@ using UnityEngine.UI;
 [ CustomEditor ( typeof ( Tank_ID_Control_CS ) ) ]
 
 public class Tank_ID_Control_CSEditor : Editor {
-	
+/*	
 	SerializedProperty Tank_IDProp ;
 	SerializedProperty RelationshipProp ;
 	SerializedProperty ReSpawn_TimesProp ;
@@ -180,5 +180,5 @@ public class Tank_ID_Control_CSEditor : Editor {
 				}
 			}
 		}
-	}
+	}*/
 }

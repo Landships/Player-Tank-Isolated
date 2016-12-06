@@ -14,6 +14,7 @@ public class Driver_Controller_VR : MonoBehaviour
 {
     byte current_player; // owner = player 1
 
+
     // Client Queue
     int frame = 0;
 
@@ -33,6 +34,8 @@ public class Driver_Controller_VR : MonoBehaviour
 
     GameObject n_manager;
     network_manager n_manager_script;
+    Drive_Control_CS drive_control;
+    Control_Angles control_angles;
 
     bool started = false;
     bool ready = false;
@@ -55,6 +58,8 @@ public class Driver_Controller_VR : MonoBehaviour
 
     void Start()
     {
+        drive_control = GetComponent<Drive_Control_CS>();
+        control_angles = GetComponent<Control_Angles>();
     }
 
     void Update()
@@ -72,6 +77,30 @@ public class Driver_Controller_VR : MonoBehaviour
             if (current_player == 1)
             {
                 server_get_values_to_send();
+                float left_angle = control_angles.GetLeftLeverAngle() / 30f;
+                float right_angle = control_angles.GetRightLeverAngle() / 30f;
+
+                if (left_angle >= 0)
+                {
+                    left_angle = 2 * left_angle;
+                }
+                else
+                {
+                    left_angle = 2 * left_angle;
+                }
+
+                if (right_angle >= 0)
+                {
+                    right_angle = 2 * right_angle;
+                }
+                else
+                {
+                    right_angle = 2 * right_angle;
+                }
+
+                drive_control.Left_Speed_Step = left_angle;
+                drive_control.Right_Speed_Step = right_angle;
+                
             }
 
             else
@@ -95,7 +124,7 @@ public class Driver_Controller_VR : MonoBehaviour
     {
         if (current_player == 1)
         {
-            
+            //
         }
         else
         {
