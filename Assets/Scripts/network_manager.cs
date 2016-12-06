@@ -124,7 +124,17 @@ public class network_manager : MonoBehaviour
             //do game stuff Client
             if (started)
             {
+                if (frame == 0)
+                {
+                    client_send_information();
+                    frame = 1;
+                }
+                else
+                {
+                    frame = 0;
+                }
                 client_recieve_data();
+                
             }
         }
 
@@ -157,9 +167,6 @@ public class network_manager : MonoBehaviour
                 tell_clients_to_start();
                 started = true;
             }
-
-
-
         }
 
 
@@ -571,7 +578,7 @@ public class network_manager : MonoBehaviour
         }
 
         // NOW SEND
-        client_send_information();
+       
 
     }
 

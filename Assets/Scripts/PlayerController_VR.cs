@@ -22,11 +22,6 @@ public class PlayerController_VR : MonoBehaviour
     // Client Queue
     int frame = 0;
 
-    //Client to send
-    byte[] client_info = new byte[100];
-    float[] client_cache = new float[6];
-
-
     int server_player;
 
     // general
