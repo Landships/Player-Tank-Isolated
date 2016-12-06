@@ -12,7 +12,7 @@ using System;
 
 public class Lever_Controller_VR : MonoBehaviour
 {
-    byte current_player; // owner = player 2
+    byte current_player; // owner = player 1
 
     public GameObject left_lever;
     public GameObject right_lever;
@@ -45,22 +45,15 @@ public class Lever_Controller_VR : MonoBehaviour
         n_manager = GameObject.Find("Custom Network Manager(Clone)");
         n_manager_script = n_manager.GetComponent<network_manager>();
         current_player = (byte)(n_manager_script.client_players_amount);
-        if (current_player != 2)
+        if (current_player != 1)
         {
-            //left_lever.GetComponent<VRTK.VRTK_InteractableObject>().enabled = false;
-            //right_lever.GetComponent<VRTK.VRTK_InteractableObject>().enabled = false;
-            //.GetComponent<BoxCollider>().enabled = false;
-            //right_lever.GetComponent<BoxCollider>().enabled = false;
-            //Destroy(left_lever.GetComponent<HingeJoint>());
-            //Destroy(right_lever.GetComponent<HingeJoint>());
-            //left_lever.GetComponent<Rigidbody>().isKinematic = true;
-            //right_lever.GetComponent<Rigidbody>().isKinematic = true;
+            left_lever.GetComponent<VRTK.VRTK_InteractableObject>().enabled = false;
+            right_lever.GetComponent<VRTK.VRTK_InteractableObject>().enabled = false;
         }
     }
 
     void Start()
     {
-        //n_manager = null;
     }
 
     void Update()
@@ -68,8 +61,6 @@ public class Lever_Controller_VR : MonoBehaviour
 
         if (n_manager != null)
         {
-            //n_manager_script = n_manager.GetComponent<network_manager>();
-            //current_player = (byte)(n_manager_script.client_players_amount);
             started = n_manager_script.started;
             ready = n_manager_script.game_ready;
 
@@ -77,14 +68,14 @@ public class Lever_Controller_VR : MonoBehaviour
 
             reliable_message = n_manager_script.reliable_message;
 
-            if (current_player == 2)
+            if (current_player == 1)
             {
-                client_send_values();
+                server_get_values_to_send();
             }
 
             else
             {
-                server_get_client_hands();
+                client_update_values();
             }
         }
     }
@@ -101,7 +92,7 @@ public class Lever_Controller_VR : MonoBehaviour
     //if not owner and not host, do nothing, else:
     void update_world_state()
     {
-        if (current_player == 2)
+        if (current_player == 1)
         {
             //
         }
@@ -110,7 +101,7 @@ public class Lever_Controller_VR : MonoBehaviour
             left_lever.transform.localRotation = Quaternion.Euler(left_x, 90, 0);
             right_lever.transform.localRotation = Quaternion.Euler(right_x, 0, 0);
 
-            Debug.Log("left x = " + left_x);
+           // Debug.Log("left x = " + left_x);
         }
     }
 

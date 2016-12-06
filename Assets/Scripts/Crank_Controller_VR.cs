@@ -47,14 +47,8 @@ public class Crank_Controller_VR : MonoBehaviour
         current_player = (byte)(n_manager_script.client_players_amount);
         if (current_player != 2)
         {
-            //vertical_crank.GetComponent<VRTK.VRTK_InteractableObject>().enabled = false;
-            //horizontal_crank.GetComponent<VRTK.VRTK_InteractableObject>().enabled = false;
-            //.GetComponent<BoxCollider>().enabled = false;
-            //horizontal_crank.GetComponent<BoxCollider>().enabled = false;
-            //Destroy(vertical_crank.GetComponent<HingeJoint>());
-            //Destroy(horizontal_crank.GetComponent<HingeJoint>());
-            //vertical_crank.GetComponent<Rigidbody>().isKinematic = true;
-            //horizontal_crank.GetComponent<Rigidbody>().isKinematic = true;
+            vertical_crank.GetComponent<VRTK.VRTK_InteractableObject>().enabled = false;
+            horizontal_crank.GetComponent<VRTK.VRTK_InteractableObject>().enabled = false;
         }
     }
 
