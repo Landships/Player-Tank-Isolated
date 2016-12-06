@@ -98,7 +98,7 @@ public class PlayerController_VR : MonoBehaviour
                 }
                 else
                 {
-                    server_update_values(n_manager_script.server_to_client_data);
+                    server_get_client_hands();
                 }
             }
             update_world_state();
@@ -134,22 +134,8 @@ public class PlayerController_VR : MonoBehaviour
         }
     }
 
-    public void server_update_values(byte[] client_inputs)
-    {
-        float[] back = new float[6];
 
-        Buffer.BlockCopy(client_inputs, 0, back, 0, client_inputs.Length);
 
-        left_x = back[0];
-        left_y = back[1];
-        left_z = back[2];
-
-        Debug.Log("left controller vector3: " + right_x + " " + right_y + " " + right_z);
-
-        right_x = back[3];
-        right_y = back[4];
-        right_z = back[5];
-    }
 
     //if not owner and not host, do nothing, else:
     void update_world_state()
@@ -194,39 +180,9 @@ public class PlayerController_VR : MonoBehaviour
 
     }
 
-    void client_update_values()
-    {
-
-        //byte[] client_new_world = n_manager_script.server_to_client_data_large;
-        float[] data = new float[25];
-        Buffer.BlockCopy(n_manager_script.server_to_client_data_large, 3, data, 0, 100);
-
-        // 6 * 4byte things
-        // 4byte things = left_handx, left_handy, left_handz, right_handx, right_handy, right_handz 
-        int offset = 6;
-        int index = 0;
-        if (owner == 2)
-        {
-            index = index + offset;
-        }
-        if (owner == 3)
-        {
-            index = index + offset + offset;
-        }
-        if (owner == 4)
-        {
-            index = index + offset + offset + offset;
-        }
 
 
-        left_x = data[index];
-        left_y = data[index + 1];
-        left_z = data[index + 2];
-        right_x = data[index + 3];
-        right_y = data[index + 4];
-        right_z = data[index + 5];
 
-    }
 
     void client_reconciliation()
     {
@@ -279,74 +235,9 @@ public class PlayerController_VR : MonoBehaviour
     }
 
 
-    public void server_get_values_to_send()
-    {
-
-        float[] data_cache = new float[25];
-        byte one = n_manager_script.server_to_client_data_large[0];
-        byte two = n_manager_script.server_to_client_data_large[1];
-        byte three = n_manager_script.server_to_client_data_large[2];
-
-        Buffer.BlockCopy(n_manager_script.server_to_client_data_large, 3, data_cache, 0, 100);
-
-        int offset = 6;
-        int index = 0;
-        if (owner == 2)
-        {
-            index = index + offset;
-        }
-        if (owner == 3)
-        {
-            index = index + offset + offset;
-        }
-        if (owner == 4)
-        {
-            index = index + offset + offset + offset;
-        }
-
-        data_cache[index] = left_hand.transform.position.x;
-        data_cache[index + 1] = left_hand.transform.position.y;
-        data_cache[index + 2] = left_hand.transform.position.z;
-        data_cache[index + 3] = right_hand.transform.position.x;
-        data_cache[index + 4] = right_hand.transform.position.y;
-        data_cache[index + 5] = right_hand.transform.position.z;
-
-        byte[] data_out = new byte[103];
-        Buffer.BlockCopy(data_cache, 0, data_out, 3, 100);
-        data_out[0] = one;
-        data_out[1] = two;
-        data_out[2] = three;
-
-        //Buffer.BlockCopy(data_out, 0, n_manager_script.server_to_client_data_large, 0, 115);
-        //Debug.Log("Server should be here");
-        n_manager_script.server_to_client_data_large = data_out;
 
 
 
-
-
-
-    }
-
-
-    void client_send_values()
-    {
-
-        client_cache[0] = left_controller.transform.position.x;
-        client_cache[1] = left_controller.transform.position.y;
-        client_cache[2] = left_controller.transform.position.z;
-        client_cache[3] = right_controller.transform.position.x;
-        client_cache[4] = right_controller.transform.position.y;
-        client_cache[5] = right_controller.transform.position.z;
-
-        Buffer.BlockCopy(client_cache, 0, n_manager_script.client_to_server_data_large, 0, 100);
-
-
-        Debug.Log("Left controller sending: " + right_controller.transform.position.ToString());
-
-        n_manager_script.client_send_information();
-
-    }
 
 
 
@@ -394,18 +285,102 @@ public class PlayerController_VR : MonoBehaviour
         right_controller.GetComponent<VRTK.VRTK_ControllerEvents>().TriggerClicked += new VRTK.ControllerInteractionEventHandler(client_send_reliable_message);
     }
 
-    void client_send_reliable_message(object sender, VRTK.ControllerInteractionEventArgs e)
-    {
+
+
+
+
+
+
+
+
+
+
+
+    // ----------------------------
+    // Functions that use Block Copy
+    // ----------------------------
+
+    void client_send_reliable_message(object sender, VRTK.ControllerInteractionEventArgs e) {
         Debug.Log("CLICKED");
-        if (current_player == 1)
-        {
+        if (current_player == 1) {
             n_manager_script.server_send_reliable();
-        }
-        else
-        {
+        } else {
             n_manager_script.client_send_reliable();
         }
     }
+
+
+    // The client get its values/inputs to send to the server
+    void client_send_values() {
+        float[] left_controller_values = { left_controller.transform.position.x,
+                                           left_controller.transform.position.y,
+                                           left_controller.transform.position.z };
+        float[] right_controller_values = { right_controller.transform.position.x,
+                                            right_controller.transform.position.y,
+                                            right_controller.transform.position.z };
+
+        n_manager_script.send_from_client(1, left_controller_values);
+        n_manager_script.send_from_client(2, right_controller_values);
+
+    }
+
+
+
+    // Server Updates the server larger buffer it is going to send
+    public void server_get_values_to_send() {
+
+        float[] left_controller_values = { left_hand.transform.position.x,
+                                           left_hand.transform.position.y,
+                                           left_hand.transform.position.z };
+        float[] right_controller_values = { right_hand.transform.position.x,
+                                            right_hand.transform.position.y,
+                                            right_hand.transform.position.z };
+
+
+
+        n_manager_script.send_from_server(1, left_controller_values);
+        n_manager_script.send_from_server(2, right_controller_values);
+
+    }
+
+
+
+
+    // Client get values from the server buffer
+    void client_update_values() {
+
+        float[] left_controller_values = n_manager_script.client_read_server_buffer(1);
+        float[] right_controller_values = n_manager_script.client_read_server_buffer(2);
+
+        left_x = left_controller_values[0];
+        left_y = left_controller_values[1];
+        left_z = left_controller_values[2];
+
+        right_x = right_controller_values[0];
+        right_y = right_controller_values[1];
+        right_z = right_controller_values[2];
+
+    }
+
+        // Server Get values from the client buffer, so the client inputs
+    public void server_get_client_hands()
+    {
+        float[] left_controller_values = n_manager_script.server_read_client_buffer(1);
+        float[] right_controller_values = n_manager_script.server_read_client_buffer(2);
+
+        left_x = left_controller_values[0];
+        left_y = left_controller_values[1];
+        left_z = left_controller_values[2];
+
+        Debug.Log("left controller vector3: " + right_x + " " + right_y + " " + right_z);
+
+        right_x = right_controller_values[0];
+        right_y = right_controller_values[1];
+        right_z = right_controller_values[2];
+    }
+
+
+
 
 
 }

@@ -73,7 +73,7 @@ public class Crank_Controller_VR : MonoBehaviour
         else
         {
             //receive from client
-            server_read_buffer(n_manager_script.server_to_client_data);
+            server_read_buffer(n_manager_script.server_data_from_client);
         }
     }
 

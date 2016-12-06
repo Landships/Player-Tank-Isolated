@@ -60,9 +60,9 @@ public class network_manager : MonoBehaviour
     public byte[] client_to_server_data_large = new byte[100];
     public byte[] client_reliable_buffer = new byte[100];
     // Server Buffers
-    public byte[] server_to_client_data_large = new byte[103];
+    public byte[] server_to_client_data_large = new byte[103]; // this also stores the data for the client
     public byte[] server_reliable_buffer = new byte[103];
-    public byte[] server_to_client_data = new byte[100];
+    public byte[] server_data_from_client = new byte[100];
 
 
 
@@ -124,7 +124,7 @@ public class network_manager : MonoBehaviour
             //do game stuff Client
             if (started)
             {
-                client_get_large_message_from_server();
+                client_recieve_data();
             }
         }
 
@@ -144,7 +144,7 @@ public class network_manager : MonoBehaviour
                 {
                     frame = 0;
                 }
-                server_get_client_player_data();
+                server_recieve_data();
 
                 //client_get_data_to_send()
 
@@ -169,6 +169,8 @@ public class network_manager : MonoBehaviour
 
 
 
+
+
     void join(string player_update)
     {
         server_lobby = GameObject.Find("Server Lobby(Clone)");
@@ -183,6 +185,12 @@ public class network_manager : MonoBehaviour
         image.color = new Color(0, 255, 0);
     }
 
+
+
+
+    // ----------------------------
+    // Setup Network
+    // ----------------------------
 
     void server_setup()
     {
@@ -215,7 +223,6 @@ public class network_manager : MonoBehaviour
 
     }
 
-
     void client_setup()
     {
         /// Global Config defines global paramters for network library.
@@ -246,9 +253,6 @@ public class network_manager : MonoBehaviour
 
     }
 
-
-
-
     void connect_to_server(string ip)
     {
         byte error;
@@ -263,9 +267,6 @@ public class network_manager : MonoBehaviour
             Debug.Log("I Sent my request to connect");
         }
     }
-
-
-
 
 
 
@@ -315,10 +316,6 @@ public class network_manager : MonoBehaviour
         }
     }
 
-
-
-
-
     void server_confirm_client_join(int s_c_connection, byte players_in_game)
     {
         Debug.Log("ServerConnection After: " + server_client_connection);
@@ -353,9 +350,6 @@ public class network_manager : MonoBehaviour
         }
 
     }
-
-
-
 
     void client_lobby_update()
     {
@@ -417,9 +411,6 @@ public class network_manager : MonoBehaviour
         }
     }
 
-
-
-
     void tell_clients_to_start()
     {
         byte error;
@@ -455,27 +446,312 @@ public class network_manager : MonoBehaviour
     }
 
 
+
+
+
     public bool is_the_host()
     {
         return is_host;
     }
 
-
-
-
-
-
-    public void client_send_information()
+    public byte getServerPlayersAmt()
     {
-        byte error;
-        NetworkTransport.Send(client_socket_ID, client_connection, client_reliable_channel, client_to_server_data_large, size_of_client_buffer, out error);
+        return server_players_amount;
+    }
+
+
+
+
+
+
+    // ----------------------------
+    // Update Buffer Functions
+    // ----------------------------
+
+    // This function updates the values of the server buffer to then be sent within the update function
+    public void send_from_server(int object_case, float[] values) 
+    {
+
+
+        //server_to_client_data_large; // this also stores the data for the client
+        //server_reliable_buffer;
+
+        int values_amount = values.Length;
+
+        switch (object_case) {
+            case 1: // Left Hand
+                Buffer.BlockCopy(values, 0, server_to_client_data_large, 3, 12);
+                break;
+            case 2: // Right Hand
+                Buffer.BlockCopy(values, 0, server_to_client_data_large, 15, 12);
+                break;
+            case 3: // Hull Position
+                Buffer.BlockCopy(values, 0, server_to_client_data_large, 27, 12);
+                break;
+            case 4: // Hull Rotation
+                Buffer.BlockCopy(values, 0, server_to_client_data_large, 39, 12);
+                break;
+            case 5: // Turret Position
+                Buffer.BlockCopy(values, 0, server_to_client_data_large, 51, 12);
+                break;
+            case 6: // Turret Rotation
+                Buffer.BlockCopy(values, 0, server_to_client_data_large, 63, 12);
+                break;
+            case 7: // Gun Rotation
+                Buffer.BlockCopy(values, 0, server_to_client_data_large, 75, 12);
+                break;
+            case 8: // Left Lever
+                Buffer.BlockCopy(values, 0, server_to_client_data_large, 87, 4);
+                break;
+            case 9: // Right Lever
+                Buffer.BlockCopy(values, 0, server_to_client_data_large, 91, 4);
+                break;
+            case 10: // Vertical Crank
+                Buffer.BlockCopy(values, 0, server_to_client_data_large, 95, 4);
+                break;
+            case 11: // Horizontal Crank
+                Buffer.BlockCopy(values, 0, server_to_client_data_large, 99, 4);
+                break;
+        }
+
+        // NOW SEND
+        // Send happens in the Update function for now...
+        // server_send_large_message_to_client()
+
+
+
+
+    }
+
+    // This function updates the buffer that the client has of all it values to send to the server
+    // AND then sends it
+    public void send_from_client(int object_case, float[] values) 
+        {
+
+
+        //client_to_server_data_large;
+        //client_reliable_buffer;
+
+        int values_amount = values.Length;
+
+        switch (object_case) {
+            case 1: // Left Hand
+                Buffer.BlockCopy(values, 0, client_to_server_data_large, 0, 12);
+                break;
+            case 2: // Right Hand
+                Buffer.BlockCopy(values, 0, client_to_server_data_large, 12, 12);
+                break;
+            case 3: // Hull Position
+                Buffer.BlockCopy(values, 0, client_to_server_data_large, 24, 12);
+                break;
+            case 4: // Hull Rotation
+                Buffer.BlockCopy(values, 0, client_to_server_data_large, 36, 12);
+                break;
+            case 5: // Turret Position
+                Buffer.BlockCopy(values, 0, client_to_server_data_large, 48, 12);
+                break;
+            case 6: // Turret Rotation
+                Buffer.BlockCopy(values, 0, client_to_server_data_large, 60, 12);
+                break;
+            case 7: // Gun Rotation
+                Buffer.BlockCopy(values, 0, client_to_server_data_large, 72, 12);
+                break;
+            case 8: // Left Lever
+                Buffer.BlockCopy(values, 0, client_to_server_data_large, 84, 4);
+                break;
+            case 9: // Right Lever
+                Buffer.BlockCopy(values, 0, client_to_server_data_large, 88, 4);
+                break;
+            case 10: // Vertical Crank
+                Buffer.BlockCopy(values, 0, client_to_server_data_large, 92, 4);
+                break;
+            case 11: // Horizontal Crank
+                Buffer.BlockCopy(values, 0, client_to_server_data_large, 96, 4);
+                break;
+        }
+
+        // NOW SEND
+        client_send_information();
+
+    }
+
+    // This function gets values from the SERVER buffer and returns them as floats
+    public float[] client_read_server_buffer(int object_case) 
+    {
+
+
+        int values_amount = 0;
+        float[] values_3 = new float[3];
+        float[] value = new float[1];
+
+
+        switch (object_case) {
+            case 1: // Left Hand
+                Buffer.BlockCopy(server_to_client_data_large, 3, values_3, 0, 12);
+                values_amount = 3;
+                break;
+            case 2: // Right Hand
+                Buffer.BlockCopy(server_to_client_data_large, 15, values_3, 0, 12);
+                values_amount = 3;
+                break;
+            case 3: // Hull Position
+                Buffer.BlockCopy(server_to_client_data_large, 27, values_3, 0, 12);
+                values_amount = 3;
+                break;
+            case 4: // Hull Rotation
+                Buffer.BlockCopy(server_to_client_data_large, 39, values_3, 0, 12);
+                values_amount = 3;
+                break;
+            case 5: // Turret Position
+                Buffer.BlockCopy(server_to_client_data_large, 51, values_3, 0, 12);
+                values_amount = 3;
+                break;
+            case 6: // Turret Rotation
+                Buffer.BlockCopy(server_to_client_data_large, 63, values_3, 0, 12);
+                values_amount = 3;
+                break;
+            case 7: // Gun Rotation
+                Buffer.BlockCopy(server_to_client_data_large, 75, values_3, 0, 12);
+                values_amount = 3;
+                break;
+            case 8: // Left Lever
+                Buffer.BlockCopy(server_to_client_data_large, 87, value, 0, 4);
+                values_amount = 1;
+                break;
+            case 9: // Right Lever
+                Buffer.BlockCopy(server_to_client_data_large, 91, value, 0, 4);
+                values_amount = 1;
+                break;
+            case 10: // Vertical Crank
+                Buffer.BlockCopy(server_to_client_data_large, 95, value, 0, 4);
+                values_amount = 1;
+                break;
+            case 11: // Horizontal Crank
+                Buffer.BlockCopy(server_to_client_data_large, 99, value, 0, 4);
+                values_amount = 1;
+                break;
+        }
+        if (values_amount == 1) {
+            return value;
+        } else {
+            return values_3;
+        }
+
+    }
+
+
+    // This function gets values from the CLIENT buffer and returns them as floats
+    public float[] server_read_client_buffer(int object_case) 
+    {
+
+
+        int values_amount = 0;
+        float[] values_3 = new float[3];
+        float[] value = new float[1];
+      
+
+        switch (object_case) 
+            {
+                case 1: // Left Hand
+                    Buffer.BlockCopy(server_data_from_client, 0, values_3, 0, 12);
+                    values_amount = 3;
+                    break;
+                case 2: // Right Hand
+                    Buffer.BlockCopy(server_data_from_client, 12, values_3, 0, 12);
+                    values_amount = 3;
+                    break;
+                case 3: // Hull Position
+                    Buffer.BlockCopy(server_data_from_client, 24, values_3, 0, 12);
+                    values_amount = 3;
+                    break;
+                case 4: // Hull Rotation
+                    Buffer.BlockCopy(server_data_from_client, 36, values_3, 0, 12);
+                    values_amount = 3;
+                    break;
+                case 5: // Turret Position
+                    Buffer.BlockCopy(server_data_from_client, 48, values_3, 0, 12);
+                    values_amount = 3;
+                    break;
+                case 6: // Turret Rotation
+                    Buffer.BlockCopy(server_data_from_client, 60, values_3, 0, 12);
+                    values_amount = 3;
+                    break;
+                case 7: // Gun Rotation
+                    Buffer.BlockCopy(server_data_from_client, 72, values_3, 0, 12);
+                    values_amount = 3;
+                    break;
+                case 8: // Left Lever
+                    Buffer.BlockCopy(server_data_from_client, 84, value, 0, 4);
+                    values_amount = 1;
+                    break;
+                case 9: // Right Lever
+                    Buffer.BlockCopy(server_data_from_client, 88, value, 0, 4);
+                    values_amount = 1;
+                    break;
+                case 10: // Vertical Crank
+                    Buffer.BlockCopy(server_data_from_client, 92, value, 0, 4);
+                    values_amount = 1;
+                    break; 
+                case 11: // Horizontal Crank
+                    Buffer.BlockCopy(server_data_from_client, 96, value, 0, 4);
+                    values_amount = 1;
+                    break;
+            }
+        if(values_amount == 1) 
+        {
+            return value;
+        } 
+        else
+        {
+            return values_3;
+        }
 
     }
 
 
 
-    void server_get_client_player_data()
-    {
+    // ----------------------------
+    // SEND FUNCTIONS
+    // ----------------------------
+
+    void server_send_large_message_to_client() {
+        byte error;
+        NetworkTransport.Send(server_socket_ID,
+                              server_client_connection[1],
+                              server_reliable_channel,
+                              server_to_client_data_large,
+                              size_of_server_buffer,
+                              out error);
+    }
+
+    public void client_send_information() {
+        byte error;
+        NetworkTransport.Send(client_socket_ID, client_connection, client_reliable_channel, client_to_server_data_large, size_of_client_buffer, out error);
+
+    }
+
+    public void server_send_reliable() {
+        byte error;
+        server_reliable_buffer[0] = 1;
+        NetworkTransport.Send(server_socket_ID, server_client_connection[1], server_real_reliable_channel, server_reliable_buffer, size_of_server_buffer, out error);
+
+    }
+
+    public void client_send_reliable() {
+        byte error;
+        client_reliable_buffer[0] = 1;
+        NetworkTransport.Send(client_socket_ID, client_connection, server_reliable_channel, client_reliable_buffer, size_of_client_buffer, out error);
+
+    }
+
+
+
+
+    // ----------------------------
+    // RECIEVE FUNCTIONS
+    // ----------------------------
+
+    void server_recieve_data() {
         byte error;
         //Debug.Log("Server is checking for messages...");
         int received_host_ID;
@@ -498,8 +774,7 @@ public class network_manager : MonoBehaviour
                                                 out error
                                                 );
 
-        switch (networkEvent)
-        {
+        switch (networkEvent) {
             case NetworkEventType.Nothing:
 
                 //server_player_control = server_client_connection[0];
@@ -509,48 +784,22 @@ public class network_manager : MonoBehaviour
                 break;
             case NetworkEventType.DataEvent:
                 Debug.Log("Recieved data from Player 2");
-                if (received_channel_ID == server_real_reliable_channel)
-                {
+                if (received_channel_ID == server_real_reliable_channel) {
                     reliable_message = true;
-                }
-                else
-                {
+                } else {
                     reliable_message = false;
                 }
-                //Debug.Log("WE MADE IT!!!!!");
-                //float[] back = new float[3];
-                //Buffer.BlockCopy(buffer, 0, back, 0, 12);
-                //Debug.Log(back[0].ToString());
-                //Debug.Log(back[1].ToString());
-                //Debug.Log(back[2].ToString());
 
-                server_update_world(buffer, received_connection_ID);
+                // Thid updates the buffer and the current player
+                server_data_from_client = buffer;
+                server_player_control = received_connection_ID + 1; // Update world based on data from player 2 message
+
                 break;
         }
     }
 
 
-
-
-
-    void server_update_world(byte[] client_inputs, int player_connection)
-    {
-        server_to_client_data = client_inputs;
-        server_player_control = player_connection + 1;
-
-        //GameObject player = GameObject.Find("Player(Clone)");
-        //PlayerController player_script = player.GetComponent<PlayerController>();
-        //player_script.server_update_world(client_inputs);
-    }
-
-
-
-
-
-
-
-    void client_get_large_message_from_server()
-    {
+    void client_recieve_data() {
         byte error;
         //Debug.Log("Server is checking for messages...");
         int received_host_ID;
@@ -573,8 +822,7 @@ public class network_manager : MonoBehaviour
                                                 out error
                                                 );
 
-        switch (networkEvent)
-        {
+        switch (networkEvent) {
             case NetworkEventType.Nothing:
                 //Debug.Log("No Message");
                 break;
@@ -590,57 +838,24 @@ public class network_manager : MonoBehaviour
 
 
 
-    void server_send_large_message_to_client()
-    {
-        byte error;
-        NetworkTransport.Send(server_socket_ID,
-                              server_client_connection[1],
-                              server_reliable_channel,
-                              server_to_client_data_large,
-                              size_of_server_buffer,
-                              out error);
-
-        NetworkTransport.Send(server_socket_ID,
-                              server_client_connection[2],
-                              server_reliable_channel,
-                              server_to_client_data_large,
-                              size_of_server_buffer,
-                              out error);
-
-        NetworkTransport.Send(server_socket_ID,
-                              server_client_connection[3],
-                              server_reliable_channel,
-                              server_to_client_data_large,
-                              size_of_server_buffer,
-                              out error);
-
-    }
-
-
-    public byte getServerPlayersAmt()
-    {
-        return server_players_amount;
-    }
 
 
 
 
 
-    public void server_send_reliable()
-    {
-        byte error;
-        server_reliable_buffer[0] = 1;
-        NetworkTransport.Send(server_socket_ID, server_client_connection[1], server_real_reliable_channel, server_reliable_buffer, size_of_server_buffer, out error);
-
-    }
 
 
-    public void client_send_reliable()
-    {
-        byte error;
-        client_reliable_buffer[0] = 1;
-        NetworkTransport.Send(client_socket_ID, client_connection, server_reliable_channel, client_reliable_buffer, size_of_client_buffer, out error);
 
-    }
+
+
+
+
+
+
+
+
+
+
+
 
 }
