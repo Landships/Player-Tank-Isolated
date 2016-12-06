@@ -42,12 +42,12 @@ public class Control_Angles : MonoBehaviour
     public float GetLeftLeverAngle()
     {
         //Debug.Log("Left Lever Angle is " + left_lever_joint.angle);
-        return left_lever_joint.angle;
+        return left_lever.transform.localRotation.eulerAngles.x;
     }
 
     public float GetRightLeverAngle()
     {
-        return right_lever_joint.angle;
+        return right_lever.transform.localRotation.eulerAngles.x;
     }
 
     public float GetLeftCrankAngle()
