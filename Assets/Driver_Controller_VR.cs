@@ -51,8 +51,8 @@ public class Driver_Controller_VR : MonoBehaviour
         current_player = (byte)(n_manager_script.client_players_amount);
         if (current_player != 1)
         {
-            this.GetComponent<Drive_Control_CS>().enabled = false;
-            BroadcastMessage("DisableDriveWheel");
+            //this.GetComponent<Drive_Control_CS>().enabled = false;
+            //BroadcastMessage("DisableDriveWheel");
         }
     }
 
@@ -77,51 +77,14 @@ public class Driver_Controller_VR : MonoBehaviour
             if (current_player == 1)
             {
                 server_get_values_to_send();
-                
-                float left_angle = control_angles.GetLeftLeverAngle();
-                float right_angle = control_angles.GetRightLeverAngle();
-
-                if (left_angle > 180)
-                {
-                    left_angle = left_angle - 360;
-                }
-
-                if (right_angle > 180)
-                {
-                    right_angle = right_angle - 360;
-                }
-
-                left_angle /= 30f;
-                right_angle /= 30f;
-
-                if (left_angle >= 0)
-                {
-                    left_angle = 4.0f * left_angle;
-                }
-                else
-                {
-                    left_angle = 2.0f * left_angle;
-                }
-
-                if (right_angle >= 0)
-                {
-                    right_angle = 4.0f * right_angle;
-                }
-                else
-                {
-                    right_angle = 2.0f * right_angle;
-                }
-
-                drive_control.Left_Speed_Step = left_angle;
-                drive_control.Right_Speed_Step = right_angle;
-
-                //Debug.Log("left: " + left_angle + " right : " + right_angle);
             }
 
             else
             {
                 client_update_values();
             }
+
+            Drive();
         }
     }
 
@@ -133,6 +96,47 @@ public class Driver_Controller_VR : MonoBehaviour
         }
     }
 
+    void Drive()
+    {
+        float left_angle = control_angles.GetLeftLeverAngle();
+        float right_angle = control_angles.GetRightLeverAngle();
+
+        if (left_angle > 180)
+        {
+            left_angle = left_angle - 360;
+        }
+
+        if (right_angle > 180)
+        {
+            right_angle = right_angle - 360;
+        }
+
+        left_angle /= 30f;
+        right_angle /= 30f;
+
+        if (left_angle >= 0)
+        {
+            left_angle = 4.0f * left_angle;
+        }
+        else
+        {
+            left_angle = 2.0f * left_angle;
+        }
+
+        if (right_angle >= 0)
+        {
+            right_angle = 4.0f * right_angle;
+        }
+        else
+        {
+            right_angle = 2.0f * right_angle;
+        }
+
+        drive_control.Left_Speed_Step = left_angle;
+        drive_control.Right_Speed_Step = right_angle;
+
+        //Debug.Log("left: " + left_angle + " right : " + right_angle);
+    }
 
     //if not owner and not host, do nothing, else:
     void update_world_state()
