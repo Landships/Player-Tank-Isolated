@@ -40,11 +40,27 @@ public class Crank_Controller_VR : MonoBehaviour
 
     int frame_interval = 5;
 
+    public void Prep()
+    {
+        n_manager = GameObject.Find("Custom Network Manager(Clone)");
+        n_manager_script = n_manager.GetComponent<network_manager>();
+        current_player = (byte)(n_manager_script.client_players_amount);
+        if (current_player != 2)
+        {
+            /*vertical_crank.GetComponent<VRTK.VRTK_InteractableObject>().enabled = false;
+            horizontal_crank.GetComponent<VRTK.VRTK_InteractableObject>().enabled = false;
+            vertical_crank.GetComponent<BoxCollider>().enabled = false;
+            horizontal_crank.GetComponent<BoxCollider>().enabled = false;
+            Destroy(vertical_crank.GetComponent<HingeJoint>());
+            Destroy(horizontal_crank.GetComponent<HingeJoint>());
+            vertical_crank.GetComponent<Rigidbody>().isKinematic = true;
+            horizontal_crank.GetComponent<Rigidbody>().isKinematic = true;*/
+        }
+    }
 
     void Start()
     {
         n_manager = null;
-
     }
 
     void Update()
@@ -52,8 +68,8 @@ public class Crank_Controller_VR : MonoBehaviour
         
         if (n_manager != null)
         {
-            n_manager_script = n_manager.GetComponent<network_manager>();
-            current_player = (byte)(n_manager_script.client_players_amount);
+            //n_manager_script = n_manager.GetComponent<network_manager>();
+            //current_player = (byte)(n_manager_script.client_players_amount);
             started = n_manager_script.started;
             ready = n_manager_script.game_ready;
 
@@ -70,14 +86,7 @@ public class Crank_Controller_VR : MonoBehaviour
             {
                 server_get_client_hands();
             }
-        }
-        else
-        {
-            n_manager = GameObject.Find("Custom Network Manager(Clone)");
-
-        }
-
-        
+        }       
     }
 
     void FixedUpdate()

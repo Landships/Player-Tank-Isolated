@@ -8,15 +8,14 @@ public class spawner_manager : MonoBehaviour
     static GameObject camera_rig;
     static GameObject left_controller;
     static GameObject right_controller;
-
+    static NetworkPrep prep_script;
 
     void Start()
     {
         camera_rig = GameObject.Find("[CameraRig]");
         left_controller = camera_rig.transform.FindChild("Controller (left)").gameObject;
         right_controller = camera_rig.transform.FindChild("Controller (right)").gameObject;
-
-
+        prep_script = GameObject.Find("PlayerTank").transform.GetChild(0).GetComponent<NetworkPrep>();
     }
 
 
@@ -113,6 +112,9 @@ public class spawner_manager : MonoBehaviour
             vr_player.gameObject.GetComponent<PlayerController_VR>().add_trigger_listener();
 
         }
+
+        prep_script.BroadCast();
+
 
 
 
