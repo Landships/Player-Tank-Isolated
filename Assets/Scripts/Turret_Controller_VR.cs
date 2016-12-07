@@ -83,6 +83,7 @@ public class Turret_Controller_VR : MonoBehaviour
         n_manager_script = n_manager.GetComponent<network_manager>();
         current_player = (byte)(n_manager_script.client_players_amount);
         if (current_player != 1) {
+            cannon_vertical.enabled = false;
             //this.GetComponent<Drive_Control_CS>().enabled = false;
             //BroadcastMessage("DisableDriveWheel");
         }
@@ -106,12 +107,13 @@ public class Turret_Controller_VR : MonoBehaviour
 
             if (current_player == 2) {
                 client_send_values();
+                Move_Turret();
             } 
             else {
                 server_get_client_hands();
             }
 
-            Move_Turret();
+
         }
     }
 
