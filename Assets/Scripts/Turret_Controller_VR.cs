@@ -174,8 +174,8 @@ public class Turret_Controller_VR : MonoBehaviour
                                          transform.localRotation.eulerAngles.y,
                                          transform.localRotation.eulerAngles.z };
         */
-        Debug.Log("Client Buffer Values: Putting In");
-        Debug.Log(cannon_base_rotation_values[0].ToString());
+        //Debug.Log("Client Buffer Values: Putting In");
+        //Debug.Log(cannon_base_rotation_values[0].ToString());
         //Debug.Log(cannon_base_rotation_values[1].ToString());
         //Debug.Log(cannon_base_rotation_values[2].ToString());
         n_manager_script.send_from_client(6, cannon_base_rotation_values);
@@ -229,8 +229,8 @@ public class Turret_Controller_VR : MonoBehaviour
     // Server Get values from the client buffer, so the client inputs
     public void server_get_client_hands() {
         float[] cannon_base_rotation_values = n_manager_script.server_read_client_buffer(6);
-        Debug.Log("Server Buffer Values: Taking Out");
-        Debug.Log(cannon_base_rotation_values[0].ToString());
+        //Debug.Log("Server Buffer Values: Taking Out");
+        //Debug.Log(cannon_base_rotation_values[0].ToString());
         //Debug.Log(cannon_base_rotation_values[1].ToString());
         //Debug.Log(cannon_base_rotation_values[2].ToString());
         cannon_base_rotation_x = cannon_base_rotation_values[0];
