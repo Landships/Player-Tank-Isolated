@@ -125,7 +125,7 @@ public class network_manager : MonoBehaviour
             //do game stuff Client
             if (started)
             {
-                if (frame == 4)
+                if (frame == 2)
                 {
                     client_send_information();
                     frame = 0;
@@ -146,7 +146,7 @@ public class network_manager : MonoBehaviour
             if (started == true)
             {
 
-                if (frame == 4)
+                if (frame == 2)
                 {
                     server_send_large_message_to_client();
                     frame = 0;
