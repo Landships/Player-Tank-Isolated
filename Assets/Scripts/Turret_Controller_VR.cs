@@ -166,7 +166,7 @@ public class Turret_Controller_VR : MonoBehaviour
 
     // The client get its values/inputs to send to the server
     void client_send_values() {
-        float[] cannon_base_rotation_values = { cannon_base.transform.localRotation.x,
+        float[] cannon_base_rotation_values = { cannon_base.transform.eulerAngles.x,
                                                 0,
                                                 0};
         /*
@@ -176,8 +176,8 @@ public class Turret_Controller_VR : MonoBehaviour
         */
         Debug.Log("Client Buffer Values: Putting In");
         Debug.Log(cannon_base_rotation_values[0].ToString());
-        Debug.Log(cannon_base_rotation_values[1].ToString());
-        Debug.Log(cannon_base_rotation_values[2].ToString());
+        //Debug.Log(cannon_base_rotation_values[1].ToString());
+        //Debug.Log(cannon_base_rotation_values[2].ToString());
         n_manager_script.send_from_client(6, cannon_base_rotation_values);
         //n_manager_script.send_from_client(4, hull_rotation_values);
 
@@ -188,7 +188,7 @@ public class Turret_Controller_VR : MonoBehaviour
     // Server Updates the server larger buffer it is going to send
     public void server_get_values_to_send() {
 
-        float[] cannon_base_rotation_values = { cannon_base.transform.localRotation.x,
+        float[] cannon_base_rotation_values = { cannon_base.transform.eulerAngles.x,
                                                 0,
                                                 0};
         /*
@@ -231,8 +231,8 @@ public class Turret_Controller_VR : MonoBehaviour
         float[] cannon_base_rotation_values = n_manager_script.server_read_client_buffer(6);
         Debug.Log("Server Buffer Values: Taking Out");
         Debug.Log(cannon_base_rotation_values[0].ToString());
-        Debug.Log(cannon_base_rotation_values[1].ToString());
-        Debug.Log(cannon_base_rotation_values[2].ToString());
+        //Debug.Log(cannon_base_rotation_values[1].ToString());
+        //Debug.Log(cannon_base_rotation_values[2].ToString());
         cannon_base_rotation_x = cannon_base_rotation_values[0];
         //float[] hull_rotation_values = n_manager_script.server_read_client_buffer(4);
 
