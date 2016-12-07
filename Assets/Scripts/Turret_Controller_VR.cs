@@ -25,7 +25,7 @@ public class Turret_Controller_VR : MonoBehaviour
     float turret_rotation_z;
 
     float turret_base_rotation_y;
-    float barrel_base_rotation_x;
+    float cannon_base_rotation_x;
 
 
 
@@ -67,8 +67,9 @@ public class Turret_Controller_VR : MonoBehaviour
     GameObject n_manager;
     network_manager n_manager_script;
     public GameObject turret_objects;
-    public GameObject barrel_base;
+    public GameObject cannon_base;
     Control_Angles control_angles;
+    Cannon_Vertical_CS cannon_vertical;
 
     bool started = false;
     bool ready = false;
@@ -89,18 +90,7 @@ public class Turret_Controller_VR : MonoBehaviour
 
     void Start() {
         control_angles = GetComponent<Control_Angles>();
-        past_angle = 90.0f;
-        increasing = true;
-        location_in_range = 0.0f;
-        location_adder = 5.0f;
-
-
-        max_angle_range = 360.0f * number_of_turns;
-        min_angle_range = -max_angle_range;
-
-        tally_negative = 0;
-        tally_positive = 0;
-        previous_angle = 0.0f;
+        cannon_vertical = cannon_base.GetComponent<Cannon_Vertical_CS>();
 
     }
 
@@ -114,10 +104,10 @@ public class Turret_Controller_VR : MonoBehaviour
 
             reliable_message = n_manager_script.reliable_message;
 
-            if (current_player == 1) {
-                server_get_values_to_send();
+            if (current_player == 2) {
+                client_send_values();
             } else {
-                client_update_values();
+                server_get_client_hands();
             }
 
             Move_Turret();
@@ -131,92 +121,17 @@ public class Turret_Controller_VR : MonoBehaviour
     }
 
     void Move_Turret() {
-        float horizontal_crank_angle = control_angles.GetLeftCrankAngle();
-        float vertical_crank_angle = control_angles.GetRightCrankAngle();
-
-        if (horizontal_crank_angle < 0) {
-            horizontal_crank_angle = 180 + (180 + horizontal_crank_angle); 
-        }
-
-        Debug.Log(horizontal_crank_angle.ToString());
-
-
-
-        // Move Barrel
-        if (vertical_crank_angle < 0) {
-            vertical_crank_angle = Mathf.Abs(vertical_crank_angle);
-        }
-        if (vertical_crank_angle >= 0) {
-            vertical_crank_angle = vertical_crank_angle + 360.0f;
-        }
-
-        barrel_base_rotation_x = (vertical_lower_bound_angle - ((vertical_crank_angle / 2160.0f) * vertical_angle_range));
-       
-
-        // Move Gun
-        if (previous_angle < 350 && horizontal_crank_angle > 0) {
-            tally_positive++;
-        }
-        if (previous_angle < 5 && horizontal_crank_angle > 350) {
-            tally_positive--;
-        }
-        
-        if (previous_angle > 0 && horizontal_crank_angle < 0) {
-            tally_negative++;
-        }
-        
-        if (previous_angle < -350 && horizontal_crank_angle > -10) {
-            tally_negative++;
-        }
-        if (previous_angle < 0 && horizontal_crank_angle > 0) {
-            tally_negative--;
-        }
-
-
-
-
-        if (tally_positive > number_of_turns) {
-            tally_positive = 0;
-        }
-        if (tally_negative < -number_of_turns) {
-            tally_negative = 0;
-        }
-
-
-        float alpha_angle = 0;
-
-        if (tally_negative > 0) {
-            alpha_angle = alpha_angle + ((tally_negative - 1) * -360.0f);
-        }
-
-        if (tally_positive > 0) {
-            alpha_angle = alpha_angle + (tally_positive * 360.0f);
-        }
-
-        alpha_angle = Mathf.Abs(alpha_angle);
-
-        alpha_angle = alpha_angle / max_angle_range;
-
-        alpha_angle = alpha_angle * 360.0f;
-
-
-        turret_base_rotation_y = alpha_angle;
-
-
-        //Debug.Log(turret_base_rotation_y.ToString());
-
+        cannon_vertical.Temp_Vertical = control_angles.GetVertCrankDelta() / 1080f;
     }
 
 
 
     void update_world_state() {
-        if (current_player == 2) { // ITS 2 BUT CHANGE IT LATER BECAUSE PLAYER 2 IS THE GUNNER
+        if (current_player == 2) { 
             //
         } else {
-            barrel_base.transform.localRotation = Quaternion.Euler(barrel_base_rotation_x, 0, 0);
+            cannon_base.transform.localRotation = Quaternion.Euler(cannon_base_rotation_x, 0, 0);
             turret_objects.transform.localRotation = Quaternion.Euler(0, turret_base_rotation_y, 0);
-
-
         }
     }
 

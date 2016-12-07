@@ -13,7 +13,12 @@ public class Cannon_Vertical_CS : MonoBehaviour {
 
 	float Current_Angle ;
 	float Target_Angle ;
+
+
 	public float Temp_Vertical ; // Referred to from "Sound_Control_CS".
+
+
+
 	bool Tracking_Flag = false ;
 	bool Moving_Flag = false ;
 	bool Fire_Flag = false ;
@@ -71,6 +76,9 @@ public class Cannon_Vertical_CS : MonoBehaviour {
 			case 5 :
 				Mouse_Input () ;
 				break ;
+            case 8:
+                Crank_Input();
+                break;
 			}
 		}
 	}
@@ -87,9 +95,16 @@ public class Cannon_Vertical_CS : MonoBehaviour {
 			case 10 :
 				AI_Input () ;
 				break ;
+            case 8:
+                Auto_Turn();
+                break;
 			}
 		}
 	}
+
+    void Crank_Input() {
+
+    }
 	
 	void Stick_Input () {
 		if ( Input.GetButton ( "L_Button" ) ) {
