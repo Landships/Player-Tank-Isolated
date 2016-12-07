@@ -65,7 +65,7 @@ public class network_manager : MonoBehaviour
     public byte[] server_data_from_client = new byte[100];
 
 
-    int frame = 2;
+    int frame = 0;
 
 
     void Start()
@@ -125,7 +125,7 @@ public class network_manager : MonoBehaviour
             //do game stuff Client
             if (started)
             {
-                if (frame == 2)
+                if (frame == 0)
                 {
                     client_send_information();
                     frame = 0;
@@ -146,7 +146,7 @@ public class network_manager : MonoBehaviour
             if (started == true)
             {
 
-                if (frame == 2)
+                if (frame == 0)
                 {
                     server_send_large_message_to_client();
                     frame = 0;

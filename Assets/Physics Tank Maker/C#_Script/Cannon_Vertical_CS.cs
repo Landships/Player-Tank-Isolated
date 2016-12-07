@@ -103,7 +103,7 @@ public class Cannon_Vertical_CS : MonoBehaviour {
 	}
 
     void Crank_Input() {
-        Debug.Log(Temp_Vertical.ToString());
+        //Debug.Log(Temp_Vertical.ToString());
         Rotate();
     }
 	
