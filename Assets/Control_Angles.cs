@@ -69,7 +69,7 @@ public class Control_Angles : MonoBehaviour {
                 return;
             }
         }
-        Debug.Log(vert_degree);
+        //Debug.Log(vert_degree);
 
 
     }

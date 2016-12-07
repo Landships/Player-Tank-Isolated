@@ -106,7 +106,8 @@ public class Turret_Controller_VR : MonoBehaviour
 
             if (current_player == 2) {
                 client_send_values();
-            } else {
+            } 
+            else {
                 server_get_client_hands();
             }
 
@@ -121,7 +122,7 @@ public class Turret_Controller_VR : MonoBehaviour
     }
 
     void Move_Turret() {
-        cannon_vertical.Temp_Vertical = control_angles.GetVertCrankDelta() / 1080f;
+        cannon_vertical.Temp_Vertical = control_angles.GetVertCrankDelta() / 20f;
     }
 
 
@@ -162,15 +163,15 @@ public class Turret_Controller_VR : MonoBehaviour
 
     // The client get its values/inputs to send to the server
     void client_send_values() {
-        float[] hull_position_values = { transform.localPosition.x,
-                                         transform.localPosition.y,
-                                         transform.localPosition.z };
-
+        float[] cannon_base_rotation_values = { cannon_base.transform.localRotation.x,
+                                                0,
+                                                0};
+        /*
         float[] hull_rotation_values = { transform.localRotation.eulerAngles.x,
                                          transform.localRotation.eulerAngles.y,
                                          transform.localRotation.eulerAngles.z };
-
-        //n_manager_script.send_from_client(3, hull_position_values);
+        */
+        n_manager_script.send_from_client(6, cannon_base_rotation_values);
         //n_manager_script.send_from_client(4, hull_rotation_values);
 
     }
@@ -180,17 +181,17 @@ public class Turret_Controller_VR : MonoBehaviour
     // Server Updates the server larger buffer it is going to send
     public void server_get_values_to_send() {
 
-        float[] hull_position_values = { transform.localPosition.x,
-                                         transform.localPosition.y,
-                                         transform.localPosition.z };
-
+        float[] cannon_base_rotation_values = { cannon_base.transform.localRotation.x,
+                                                0,
+                                                0};
+        /*
         float[] hull_rotation_values = { transform.localRotation.eulerAngles.x,
                                          transform.localRotation.eulerAngles.y,
                                          transform.localRotation.eulerAngles.z };
+        */
 
-
-        n_manager_script.send_from_server(3, hull_position_values);
-        n_manager_script.send_from_server(4, hull_rotation_values);
+        n_manager_script.send_from_server(6, cannon_base_rotation_values);
+        //n_manager_script.send_from_server(4, hull_rotation_values);
 
     }
 
@@ -200,9 +201,12 @@ public class Turret_Controller_VR : MonoBehaviour
     // Client get values from the server buffer
     void client_update_values() {
 
-        float[] hull_position_values = n_manager_script.client_read_server_buffer(3);
-        float[] hull_rotation_values = n_manager_script.client_read_server_buffer(4);
-        /*
+        float[] cannon_base_rotation_values = n_manager_script.client_read_server_buffer(6);
+        //float[] hull_rotation_values = n_manager_script.client_read_server_buffer(4);
+
+
+        cannon_base_rotation_x = cannon_base_rotation_values[0];
+         /*
         pos_x = hull_position_values[0];
         pos_y = hull_position_values[1];
         pos_z = hull_position_values[2];
@@ -217,8 +221,10 @@ public class Turret_Controller_VR : MonoBehaviour
 
     // Server Get values from the client buffer, so the client inputs
     public void server_get_client_hands() {
-        float[] hull_position_values = n_manager_script.server_read_client_buffer(3);
-        float[] hull_rotation_values = n_manager_script.server_read_client_buffer(4);
+        float[] cannon_base_rotation_values = n_manager_script.server_read_client_buffer(6);
+
+        cannon_base_rotation_x = cannon_base_rotation_values[0];
+        //float[] hull_rotation_values = n_manager_script.server_read_client_buffer(4);
 
         //pos_x = hull_position_values[0];
         //pos_y = hull_position_values[1];
