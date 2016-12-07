@@ -106,13 +106,12 @@ public class Turret_Controller_VR : MonoBehaviour
 
             if (current_player == 2) {
                 client_send_values();
-                Move_Turret();
             } 
             else {
                 server_get_client_hands();
             }
-            
-            
+
+            Move_Turret();
         }
     }
 

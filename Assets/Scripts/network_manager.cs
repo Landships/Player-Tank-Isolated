@@ -13,7 +13,7 @@ public class network_manager : MonoBehaviour
     Canvas_Manager manager_script;
     GameObject server_lobby;
     GameObject join_lobby;
-    int frame = 0;
+
 
     //Network variables
     string server_ip;
@@ -65,6 +65,7 @@ public class network_manager : MonoBehaviour
     public byte[] server_data_from_client = new byte[100];
 
 
+    int frame = 4;
 
 
     void Start()
@@ -124,14 +125,14 @@ public class network_manager : MonoBehaviour
             //do game stuff Client
             if (started)
             {
-                if (frame == 0)
+                if (frame == 4)
                 {
                     client_send_information();
-                    frame = 1;
+                    frame = 0;
                 }
                 else
                 {
-                    frame = 0;
+                    frame++;
                 }
                 client_recieve_data();
                 
@@ -145,14 +146,14 @@ public class network_manager : MonoBehaviour
             if (started == true)
             {
 
-                if (frame == 0)
+                if (frame == 4)
                 {
                     server_send_large_message_to_client();
-                    frame = 1;
+                    frame = 0;
                 }
                 else
                 {
-                    frame = 0;
+                    frame++;
                 }
                 server_recieve_data();
 
