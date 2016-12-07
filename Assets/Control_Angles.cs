@@ -53,12 +53,15 @@ public class Control_Angles : MonoBehaviour
     public float GetLeftCrankAngle()
     {
 
-        return hori_crank.transform.localRotation.eulerAngles.x;
+        //return hori_crank.transform.localRotation.eulerAngles.x;
+        return hori_crank_joint.angle;
+        //left_lever_joint.angle
     }
 
     public float GetRightCrankAngle()
     {
-        return vert_crank.transform.localRotation.eulerAngles.x;
+        //return vert_crank.transform.localRotation.eulerAngles.x;
+        return vert_crank_joint.angle;
     }
 
     public void SetLeftLeverAngle(float localX)

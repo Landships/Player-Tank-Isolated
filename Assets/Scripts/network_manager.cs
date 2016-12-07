@@ -675,11 +675,11 @@ public class network_manager : MonoBehaviour
                     Buffer.BlockCopy(server_data_from_client, 36, values_3, 0, 12);
                     values_amount = 3;
                     break;
-                case 5: // Turret Position
+                case 5: // Turret "Turret_Objects" Rotation Angle
                     Buffer.BlockCopy(server_data_from_client, 48, values_3, 0, 12);
                     values_amount = 3;
                     break;
-                case 6: // Turret Rotation
+                case 6: // Turret "Barrel_Base" Vertical Angle
                     Buffer.BlockCopy(server_data_from_client, 60, values_3, 0, 12);
                     values_amount = 3;
                     break;
