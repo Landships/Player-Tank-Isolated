@@ -82,7 +82,7 @@ public class Turret_Controller_VR : MonoBehaviour
         n_manager = GameObject.Find("Custom Network Manager(Clone)");
         n_manager_script = n_manager.GetComponent<network_manager>();
         current_player = (byte)(n_manager_script.client_players_amount);
-        if (current_player != 1) {
+        if (current_player != 2) {
             cannon_vertical.enabled = false;
             //this.GetComponent<Drive_Control_CS>().enabled = false;
             //BroadcastMessage("DisableDriveWheel");
@@ -106,8 +106,9 @@ public class Turret_Controller_VR : MonoBehaviour
             reliable_message = n_manager_script.reliable_message;
 
             if (current_player == 2) {
-                client_send_values();
                 Move_Turret();
+                client_send_values();
+                
             } 
             else {
                 server_get_client_hands();
@@ -173,6 +174,8 @@ public class Turret_Controller_VR : MonoBehaviour
                                          transform.localRotation.eulerAngles.y,
                                          transform.localRotation.eulerAngles.z };
         */
+        Debug.Log("Client Buffer Values: Putting In");
+        Debug.Log(cannon_base_rotation_values.ToString());
         n_manager_script.send_from_client(6, cannon_base_rotation_values);
         //n_manager_script.send_from_client(4, hull_rotation_values);
 
@@ -224,7 +227,8 @@ public class Turret_Controller_VR : MonoBehaviour
     // Server Get values from the client buffer, so the client inputs
     public void server_get_client_hands() {
         float[] cannon_base_rotation_values = n_manager_script.server_read_client_buffer(6);
-
+        Debug.Log("Server Buffer Values: Taking Out");
+        Debug.Log(cannon_base_rotation_values.ToString());
         cannon_base_rotation_x = cannon_base_rotation_values[0];
         //float[] hull_rotation_values = n_manager_script.server_read_client_buffer(4);
 

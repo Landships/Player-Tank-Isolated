@@ -65,7 +65,7 @@ public class network_manager : MonoBehaviour
     public byte[] server_data_from_client = new byte[100];
 
 
-    int frame = 4;
+    int frame = 2;
 
 
     void Start()

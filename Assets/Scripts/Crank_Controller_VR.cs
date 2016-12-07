@@ -104,7 +104,7 @@ public class Crank_Controller_VR : MonoBehaviour
             vertical_crank.transform.localRotation = Quaternion.Euler(vertical_x, -90, -90);
             horizontal_crank.transform.localRotation = Quaternion.Euler(horizontal_x, -90, -90);
 
-            Debug.Log("vertical x = " + vertical_x);
+            //Debug.Log("vertical x = " + vertical_x);
         }
     }
 
